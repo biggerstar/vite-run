@@ -1,8 +1,21 @@
-## vite-run
+<h1 style="text-align: center">vite-run</h1>
+<br/>
+<p align="center">
+    <a href="https://npmjs.com/package/vite-run">
+        <img src="https://img.shields.io/npm/v/vite-run.svg" alt="npm package">
+    </a>
+    <a href="#">
+      <img src="https://img.shields.io/npm/l/vite-run" alt="license" />
+    </a>
+</p>
+<br/>
+
+   
+
 
 vite 多配置执行支持, 配置共享，像搭积木一样自由组合配置，
-颗粒度精确到单字段配置   
-  
+颗粒度精确到单字段配置
+
 该工具在`pnpm` 多包模式下开发
 
 --- 
@@ -41,15 +54,13 @@ vite 多配置执行支持, 配置共享，像搭积木一样自由组合配置�
 ### 简单演示
 
 下方只是简单演示示例，并非完整配置，
-完整配置请见[viterun.config.ts](./viterun.config.ts)   
+完整配置请见[viterun.config.ts](./viterun.config.ts)
 
 **dev**
 ![dev](./images/dev.png)
 
 **build**
 ![build](./images/build.png)
-
-
 
 ## viterun.config [.js | .ts]
 
