@@ -1,7 +1,6 @@
 {
   "name": "vite-run",
-  "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "bin": {
     "vite-run": "./dist/vite-run.bin.js"
