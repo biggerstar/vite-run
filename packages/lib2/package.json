@@ -1,0 +1,16 @@
+{
+  "name": "lib2",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "typings": "./dist/lib2.d.ts",
+  "types": "./dist/lib2.d.ts",
+  "exports": {
+    ".": {
+      "default": "./dist/lib2.es.js",
+      "import": "./dist/lib2.es.js",
+      "types": "./dist/lib2.d.ts"
+    },
+    "./types/*": "./types/*"
+  }
+}

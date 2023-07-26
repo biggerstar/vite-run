@@ -1,0 +1,62 @@
+{
+  "name": "vite-run",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "bin": {
+    "vite-run": "./dist/vite-run.bin.js"
+  },
+  "scripts": {
+    "dev": "rimraf dist &&  vite build --watch",
+    "build": "rimraf dist && vite build && rimraf dist/vite-run.d.ts",
+    "release": "npm run -s build && git commit -am $npm_package_version && git tag $npm_package_version && git push --tags",
+    "release:npm": "npm run build && npm publish",
+    "test:build": "npm run build && npm run test:types",
+    "test:types": "vite-run types",
+    "test:dev": "vite-run dev",
+    "link": "pnpm link --dir= ./",
+    "unlink": "pnpm unlink"
+
+  },
+  "typings": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "default": "./dist/vite-run.js",
+      "import": "./dist/vite-run.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./client": {
+      "types": "./types/global.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "biggerstar",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/biggerstar/vite-run"
+  },
+  "description": "vite 多配置执行支持",
+  "dependencies": {
+    "commander": "^11.0.0",
+    "glob": "^10.3.3",
+    "picocolors": "^1.0.0",
+    "unconfig": "^0.3.9"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.3",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.7",
+    "vite-plugin-copy-dts": "0.0.5",
+    "vite-plugin-dts": "^3.2.0"
+  },
+  "keywords": [
+    "vite",
+    "build",
+    "env",
+    "config"
+  ]
+}
