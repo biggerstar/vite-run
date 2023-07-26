@@ -92,7 +92,8 @@ export class ConfigManager {
         }
         packagePart = packagePart.replaceAll(/\*+/gi, '*')  // 将检测后只有尾部带*的限制在一个,所以定义任意个最后都会被更改为1个
       }
-      allApp = allApp.concat(globSync(packagePart))
+      const foundApps = globSync(resolve(packagePart))
+      allApp = allApp.concat(foundApps)
     })
     return allApp
   }
@@ -117,7 +118,7 @@ export class ConfigManager {
    *  */
   private async createConfigMap(scriptType: string, allowApps: string[] = []) {
     const allApp = await this.getAllLocalPackage()
-    const allAppName = allApp.map(relativePath => basename(relativePath))
+    const allAppName = allApp.map(absolutePath => basename(absolutePath))
     const localConfig = this.getFullConfig()
     const {targets = {}} = localConfig
     let allowTargetMap: Record<any, any> = {}
@@ -127,7 +128,7 @@ export class ConfigManager {
     })
     for (let index in allowApps) {
       const appName = allowApps[index] // 外部用户targets中设定的相对主项目地址的能指向子包的字段路径
-      const appRelativePath = <string>allApp.find(path => basename(path) === appName)
+      const appAbsolutePath = <string>allApp.find(path => basename(path) === appName)
       const target = targets[appName]
       if (!allAppName.includes(appName)) {
         console.log(colors.red(`${appName} 在文件系统中不存在`))
@@ -136,7 +137,7 @@ export class ConfigManager {
       if (!target) continue
       let execConfigs = target[scriptType]
       if (!Array.isArray(execConfigs)) printErrorLog(`targets 中的${appName}.${scriptType}应该是一个数组`, true)
-      allowTargetMap[appRelativePath] = []
+      allowTargetMap[appAbsolutePath] = []
       execConfigs.forEach((group: any) => {
         if (!Array.isArray(group)) group = [group]
         // console.log(group);
@@ -145,7 +146,7 @@ export class ConfigManager {
         if (customDefinePart.build) type = 'build'
         else if (customDefinePart.server) type = 'server'
         else if (customDefinePart.preview) type = 'preview'
-        allowTargetMap[appRelativePath].push({
+        allowTargetMap[appAbsolutePath].push({
           appName,
           group,
           type: type,
@@ -176,16 +177,16 @@ export class ConfigManager {
   }
 
 
-  private async patchToTargets(relativePath, patchConfigList) {
+  private async patchToTargets(absolutePath, patchConfigList) {
     const baseConfig = this.viteRunConfig.baseConfig || {}
-    const realBaseConfig = await this.getRealConfig(relativePath, <object>baseConfig)  // baseConfig是函数或对象，传入函数会执行获取返回配置对象
-    realBaseConfig.root = resolve(process.cwd(), relativePath)     // 子包的根目录重定向执行到配置root上
+    const realBaseConfig = await this.getRealConfig(absolutePath, <object>baseConfig)  // baseConfig是函数或对象，传入函数会执行获取返回配置对象
+    realBaseConfig.root = resolve(process.cwd(), absolutePath)     // 子包的根目录重定向执行到配置root上
     for (const configInfo of patchConfigList) {
       const {type, config: customConfigMap} = configInfo
       for (const customConfigName in customConfigMap) {  // customConfigMap 是用户定义的配置组(group)合并后的配置，配置对象的结构类似UserConfig
         const customConfig = customConfigMap[customConfigName]
         if (isFunction(customConfig)) {
-          customConfigMap[customConfigName] = await this.getRealConfig(relativePath, <object>customConfigMap[customConfigName], {type})
+          customConfigMap[customConfigName] = await this.getRealConfig(absolutePath, <object>customConfigMap[customConfigName], {type})
         }
       }
       const viteFullCustomConfig = mergeConfig(realBaseConfig, customConfigMap)
@@ -199,9 +200,9 @@ export class ConfigManager {
   /** 脚本派发入口函数，该类所有函数都只由该入口函数触发 */
   public async patch(scriptType: string, apps: [] = []) {
     const allowTargets = await this.createConfigMap(scriptType, apps)
-    for (const relativePath in allowTargets) {
-      const packageUseConfigList = allowTargets[relativePath]  // 获取某个子包当前scriptType下要执行的配置列表
-      await this.patchToTargets(relativePath, packageUseConfigList)
+    for (const absolutePath in allowTargets) {
+      const packageUseConfigList = allowTargets[absolutePath]  // 获取某个子包当前scriptType下要执行的配置列表
+      await this.patchToTargets(absolutePath, packageUseConfigList)
     }
   }
 }

@@ -10,8 +10,12 @@ export default defineConfig({
     packages: [
         'packages/*',
         'examples/*',
+        './'
     ],
     targets: {
+        'vite-run': {   // 支持操作主包
+            dev:['watch']
+        },
         'lib1': {
             build: [['es', 'production'], 'umd'],
             types:['types'],
@@ -62,6 +66,9 @@ export default defineConfig({
         },
         11000: {
             port: 11000
+        },
+        12000: {
+            port: 12000
         },
     },
     preview: {

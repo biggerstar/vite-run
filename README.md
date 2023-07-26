@@ -111,6 +111,7 @@ export default defineConfig({
        packages: [
          'packages/*',    
          'examples/vue3',
+         './'     //  支持操作主包
        ]
     }}
     ```
