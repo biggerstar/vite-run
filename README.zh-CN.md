@@ -1,4 +1,4 @@
-<h1 style="text-align: center">vite-run</h1>
+<h1 align="center">vite-run</h1>
 <br/>
 <p align="center">
     <a href="https://npmjs.com/package/vite-run">
@@ -18,9 +18,8 @@ vite 多配置执行支持, 配置共享，像搭积木一样自由组合配置�
 
 该工具在`pnpm` 多包模式下开发
 
---- 
 
-### install
+## install
 
 - yarn
 
@@ -51,7 +50,7 @@ vite 多配置执行支持, 配置共享，像搭积木一样自由组合配置�
      vite-run dev app1 app2
     ```
 
-### Simple Demonstration
+## Simple Demonstration
 
 下方只是简单演示示例，并非完整配置，
 完整配置请见[viterun.config.ts](./viterun.config.ts)
@@ -192,7 +191,6 @@ export default defineConfig({
 
 ```
 
----
 
 ## viteRunLogPlugin
 
@@ -219,7 +217,6 @@ interceptStdoutWriteLog((log)=>{
 })
 ```
 
----
 
 ## 术语解释
 
@@ -254,5 +251,4 @@ interceptStdoutWriteLog((log)=>{
 
 ## 许可证
 
----
 MIT 许可证.

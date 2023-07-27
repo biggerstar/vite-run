@@ -1,4 +1,4 @@
-<h1 style="text-align: center">vite-run</h1>
+<h1 align="center">vite-run</h1>
 <br/>
 <p align="center">
     <a href="https://npmjs.com/package/vite-run">
@@ -18,9 +18,8 @@ building blocks,
 Granularity is accurate to single field configuration    
 This tool is developed in `pnpm` multi package mode
 
---- 
 
-### install
+## install
 
 - yarn
 
@@ -52,7 +51,7 @@ example：
      vite-run dev app1 app2
     ```
 
-### Simple Demonstration
+## Simple Demonstration
 
 The following is just a simple demonstration, not a complete configuration.  
 Please refer to the complete configuration for more information [viterun.config.ts](./viterun.config.ts)
@@ -105,9 +104,7 @@ export default defineConfig({
 
 **packages**
 
--
-
-desc  `The list of sub packages to be managed supports global and file paths, and global matching only supports ending with an * sign`
+- desc  `The list of sub packages to be managed supports global and file paths, and global matching only supports ending with an * sign`
 
 - struct ``` Array<string>```
 
@@ -201,7 +198,6 @@ export default defineConfig({
 
 ```
 
----
 
 ## viteRunLogPlugin
 
@@ -229,7 +225,6 @@ interceptStdoutWriteLog((log)=>{
 })
 ```
 
----
 
 ## Terminology
 
@@ -265,5 +260,4 @@ interceptStdoutWriteLog((log)=>{
    ```
 ## License  
 
----
 MIT License.
