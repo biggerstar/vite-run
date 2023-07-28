@@ -14,25 +14,37 @@ export default defineConfig({
     ],
     targets: {
         'vite-run': {   // 支持操作主包
-            dev:['watch']
+            dev: ['watch']
         },
         'lib1': {
-            build: [['es', 'production'], 'umd'],
-            types:['types'],
-            dev:['watch']
+            build: [
+                ['es', 'production'],
+                ['umd', 'minify']
+            ],
+            types: ['types'],
+            dev: ['watch']
         },
         'lib2': {
-            build: ['es', 'umd'],
-            types:['types'],
-            dev:['watch']
+            build: [
+                'es',
+                ['umd', 'minify']
+            ],
+            types: ['types'],
+            dev: ['watch']
         },
         'web1': {
-            build: [['es', 'production'], 'umd'],
-            dev:['10000']
+            build: [
+                ['es', 'production'],
+                ['umd', 'minify']
+            ],
+            dev: ['10000']
         },
         'web2': {
-            build: ['es', 'umd'],
-            dev:['11000']
+            build: [
+                'es',
+                ['umd', 'minify']
+            ],
+            dev: ['11000']
         },
     },
     mode: {
@@ -54,9 +66,9 @@ export default defineConfig({
         },
         watch: {
             watch: {},
-            lib: {
-                formats: ['es']
-            }
+        },
+        minify: {
+            minify: true
         },
     },
     server: {
@@ -127,6 +139,7 @@ function getBaseConfig(options: ViteRunHandleFunctionOptions): BaseConfigReturnT
         },
         build: {
             emptyOutDir: false,
+            minify: false,
             lib: {
                 entry: entryPath,
                 name: options.name,
