@@ -3,11 +3,12 @@
   "version": "0.0.2",
   "type": "module",
   "bin": {
-    "vite-run": "./dist/vite-run.bin.js"
+    "vite-run": "./dist/bin/vite-run.js"
   },
   "scripts": {
-    "dev": "rimraf dist &&  vite build --watch",
-    "build": "rimraf dist && vite build && rimraf dist/vite-run.d.ts",
+    "dev": "vite build -c config/vite.config.js --watch",
+    "dev:bin": "vite build -c config/vite.config.bin.js --watch",
+    "build": "rimraf dist && vite build -c config/vite.config.js && vite build -c config/vite.config.bin.js",
     "release": "npm run -s build && git commit -am $npm_package_version && git tag $npm_package_version && git push --tags",
     "release:npm": "npm run build && npm publish",
     "test:build": "npm run build && npm run test:types",
@@ -15,17 +16,17 @@
     "test:dev": "vite-run dev",
     "link": "pnpm link --dir= ./",
     "unlink": "pnpm unlink"
-
   },
   "typings": "./dist/index.d.ts",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "default": "./dist/vite-run.js",
-      "import": "./dist/vite-run.js",
+      "default": "./dist/vite-run.es.js",
+      "import": "./dist/vite-run.es.js",
+      "require": "./dist/vite-run.cjs.js",
       "types": "./dist/index.d.ts"
     },
-    "./client": {
+    "./types": {
       "types": "./types/global.d.ts"
     }
   },

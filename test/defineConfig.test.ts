@@ -1,4 +1,4 @@
-// 只测试dts是否报错
+// 只手动测试dts是否报错，嫌麻烦懒得使用vitest或者jest
 
 import {defineConfig} from "../src";
 
