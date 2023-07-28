@@ -9,13 +9,13 @@
     </a>
 </p> 
 <br/>
-
+ 
 
 **English** | [中文](./README.zh-CN.md)
 
 Multiple configuration execution support for vite, configuration sharing, and free combination of configurations like
-building blocks,
-Granularity is accurate to single field configuration    
+building blocks, Granularity is accurate to single field configuration      
+It can completely replace `vite.config`, you don't need to create a `vite.config` configuration in each package   
 This tool is developed in `pnpm` multi package mode
 
 
