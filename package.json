@@ -1,6 +1,6 @@
 {
   "name": "vite-run",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "bin": {
     "vite-run": "./dist/bin/vite-run.js"
@@ -9,8 +9,9 @@
     "dev": "vite build -c config/vite.config.js --watch",
     "dev:bin": "vite build -c config/vite.config.bin.js --watch",
     "build": "rimraf dist && vite build -c config/vite.config.js && vite build -c config/vite.config.bin.js",
-    "release": "npm run -s build && git commit -am $npm_package_version && git tag $npm_package_version && git push --tags",
+    "release": "npm run release:git && npm run release:npm",
     "release:npm": "npm run build && npm publish",
+    "release:git": "npm run -s build && git commit -am v$npm_package_version && git tag v$npm_package_version && git push --tags",
     "test:build": "npm run build && npm run test:types",
     "test:types": "vite-run types",
     "test:dev": "vite-run dev",
