@@ -18,7 +18,7 @@ export default defineConfig({
         },
         'lib1': {
             build: [
-                ['es', 'production'],
+                ['es'],
                 ['umd', 'minify']
             ],
             types: ['types'],

@@ -13,13 +13,13 @@ export type BaseConfigType = (options: ViteRunHandleFunctionOptions) => BaseConf
 
 export type BaseConfigReturnType = Promise<DeepPartial<DeepPartialViteUserConfig>> | DeepPartial<DeepPartialViteUserConfig>
 
-export type DeepPartialViteUserConfig = DeepPartial<NoPluginsFiledUserConfig> & { plugins: PluginOption }
+export type DeepPartialViteUserConfig = DeepPartial<NoPluginsFiledUserConfig> & { plugins?: PluginOption }
 
 /** targets下执行目标的类型，也就是命令行执行时 vite-run XXX 指向的对象,会提取当前用户已定义配置的名字，允许类型为单字符串或者字符串数组 */
 export type TargetsScriptType<Options> = ExtractConfigsFields<Options> | ExtractConfigsFields<Options>[]
 
 
-export type TargetsOptions<Options> = Record<string, Record<string, Array<TargetsScriptType<Options>>>>
+export type TargetsOptions<Options> = Record<any, Record<any, Array<TargetsScriptType<Options>>>>
 
 /** 提取ts类型声明所有的值Values */
 export type Values<T> = T[keyof T];
@@ -32,7 +32,7 @@ export type AnyRecord = {
 export type ExtractConfigsFields<Options> = Values<{
   [K in keyof Omit<Options, ViteRunSelfField>]:
   Options[K] extends Record<string, any>
-    ? `${keyof Options[K]}`
+    ? `${keyof Options[K]}` | string | number
     : never
 }>
 
@@ -72,10 +72,8 @@ export type ToViteUserConfigs = {
   [Key in keyof NoPluginsFiledUserConfig]+?:
   {
     [key: string | number | symbol]:
-      (
-        Function
-        | ((options?: ViteRunHandleFunctionOptions) => DeepPartial<NoPluginsFiledUserConfig[Key]>)
-        )
+      Function
+      | ((options?: ViteRunHandleFunctionOptions) => DeepPartial<NoPluginsFiledUserConfig[Key]>)
       | DeepPartial<NoPluginsFiledUserConfig[Key]>
   }
 }
