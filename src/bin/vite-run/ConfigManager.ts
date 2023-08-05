@@ -136,6 +136,7 @@ export class ConfigManager {
       }
       if (!target) continue
       let execConfigs = target[scriptType]
+      if (!execConfigs) continue
       if (!Array.isArray(execConfigs)) printErrorLog(`targets 中的${appName}.${scriptType}应该是一个数组`, true)
       allowTargetMap[appAbsolutePath] = []
       execConfigs.forEach((group: any) => {
