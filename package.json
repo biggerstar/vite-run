@@ -14,7 +14,7 @@
     "release:git": "npm run -s build && git commit -am v$npm_package_version && git tag v$npm_package_version && git push --tags",
     "test:build": "npm run build && npm run test:types",
     "test:types": "vite-run types",
-    "test:dev:bin": "vite-run dev:bin",
+    "test:dev": "vite-run dev",
     "link": "pnpm link --dir= ./",
     "unlink": "pnpm unlink"
   },
