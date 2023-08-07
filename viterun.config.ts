@@ -18,8 +18,8 @@ export default defineConfig({
     // },
     'lib1': {
       build: [
-        ['es'],
-        ['umd', 'minify']
+        // ['es'],
+        ['build_lib', 'production', 'umd', 'minify']
       ],
       types: ['types'],
       dev: ['watch']
@@ -69,7 +69,33 @@ export default defineConfig({
     },
     minify: {
       minify: true
-    }
+    },
+    build_lib: (options) => {
+      return {
+        lib: {
+          entry: resolve(options.packagePath, 'main.ts'),
+          formats: ['umd'],
+          name: options.name,
+          fileName: (format) => `index.${format}.js`,
+        },
+        watch: {},
+        rollupOptions: {
+          watch: {},
+          external: [
+            'vite',
+            'vue',
+            'vue-router',
+          ],
+          output: {
+            exports: 'named',
+            globals: {
+              vue: 'Vue'
+            },
+          }
+        },
+      }
+    },
+
   },
   server: {
     10000: {

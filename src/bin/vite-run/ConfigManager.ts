@@ -54,11 +54,11 @@ export class ConfigManager {
   private extractAllConfigItem() {
     for (const viteFieldName in this.config) {
       const items = this.config[viteFieldName]
-      if (typeof items !== 'object') printErrorLog(`${viteFieldName} 字段应该是一个普通js对象`, true)
+      if (typeof items !== 'object') printErrorLog(`${viteFieldName} 字段应该是一个普通js对象,请检查一下是否定义`, true)
       for (const configName in items) {
         this.allConfigItem[configName] = {
-          viteName: viteFieldName,
-          value: items[configName]
+          viteName: viteFieldName,   // vite config中的顶层字段，比如build , mode, publicDir 等
+          value: items[configName]   // 配置名和对应值
         }
       }
     }
@@ -99,16 +99,12 @@ export class ConfigManager {
   }
 
   /** 合并指定名称的config配置，传入allConfigItem中的名称，也就是外部定义的配置名 */
-  private mergeConfigs(...args: string[]): Record<any, any> {
+  private mergeConfigs(...args: any[]): Record<any, any> {
     let result = {}
     if (args.length === 0) printErrorLog(colors.red('在targets配置中存在空数组'), true)
     for (const k in args) {
-      const configName = args[k]
-      if (!configName) printErrorLog('在targets配置的数组中存在空定义,值为 undefined', true)
-      const configItem: configItemType = this.getConfig(configName)
-      result = mergeConfig(result, {
-        [configItem.viteName]: configItem.value
-      },false)
+      const configData = args[k]
+      result = mergeConfig(result, configData, false)
     }
     return result
   }
@@ -136,13 +132,25 @@ export class ConfigManager {
         process.exit(-1)
       }
       if (!target) continue
-      let execConfigs = target[scriptType]
+      let execConfigs: [] = target[scriptType]
       if (execConfigs && !Array.isArray(execConfigs)) printErrorLog(`targets 中的${appName}.${scriptType}应该是一个数组`, true)
       allowTargetMap[appAbsolutePath] = []
-      execConfigs.forEach((group: any) => {
+      for (let group: string | string[] of execConfigs) {
         if (!Array.isArray(group)) group = [group]
-        // console.log(group);
-        const customDefinePart = this.mergeConfigs(...group)
+        let groupConfigList = []
+        for (const configName of group) {
+          if (!configName) printErrorLog('在targets配置的数组中存在空定义,值为 undefined', true)
+          const configInfo = this.getConfig(configName)
+          let customConfig = configInfo.value
+          if (isFunction(customConfig)) {
+            customConfig = await this.getRealConfig(appAbsolutePath, <object>customConfig)
+          }
+          groupConfigList.push({
+            [configInfo.viteName]: customConfig
+          })
+        }
+        const customDefinePart = this.mergeConfigs.apply(<object>this, groupConfigList)
+        // console.log(customDefinePart);
         let type = 'build'   // 如果应用多个配置可能会同时存在不同操作，优先级 build > server > preview
         if (customDefinePart.build) type = 'build'
         else if (customDefinePart.server) type = 'server'
@@ -153,7 +161,7 @@ export class ConfigManager {
           type: type,
           config: customDefinePart
         })
-      })
+      }
     }
     return allowTargetMap
   }
@@ -183,17 +191,12 @@ export class ConfigManager {
     const realBaseConfig = await this.getRealConfig(absolutePath, <object>baseConfig)  // baseConfig是函数或对象，传入函数会执行获取返回配置对象
     realBaseConfig.root = resolve(process.cwd(), absolutePath)     // 子包的根目录重定向执行到配置root上
     for (const configInfo of patchConfigList) {
-      const {type, config: customConfigMap} = configInfo
-      for (const customConfigName in customConfigMap) {  // customConfigMap 是用户定义的配置组(group)合并后的配置，配置对象的结构类似UserConfig
-        const customConfig = customConfigMap[customConfigName]
-        if (isFunction(customConfig)) {
-          customConfigMap[customConfigName] = await this.getRealConfig(absolutePath, <object>customConfigMap[customConfigName], {type})
-        }
-      }
-      const viteFullCustomConfig = mergeConfig(realBaseConfig, customConfigMap)
+      const {type, config: customDefinePart} = configInfo
+      const viteFullCustomConfig = mergeConfig(realBaseConfig, customDefinePart)
       viteFullCustomConfig.viteRun = {
         ...configInfo
       }
+      // console.log(viteFullCustomConfig);
       await patchToViteEngine(type, viteFullCustomConfig)
     }
   }
