@@ -102,13 +102,14 @@ export class ConfigManager {
   private mergeConfigs(...args: string[]): Record<any, any> {
     let result = {}
     if (args.length === 0) printErrorLog(colors.red('在targets配置中存在空数组'), true)
-    args.forEach((configName: string) => {
+    for (const k in args) {
+      const configName = args[k]
       if (!configName) printErrorLog('在targets配置的数组中存在空定义,值为 undefined', true)
       const configItem: configItemType = this.getConfig(configName)
       result = mergeConfig(result, {
         [configItem.viteName]: configItem.value
-      })
-    })
+      },false)
+    }
     return result
   }
 
@@ -129,15 +130,14 @@ export class ConfigManager {
     for (let index in allowApps) {
       const appName = allowApps[index] // 外部用户targets中设定的相对主项目地址的能指向子包的字段路径
       const appAbsolutePath = <string>allApp.find(path => basename(path) === appName)
-      const target = targets[appName]
+      const target /* 某个app的target配置对象 */ = targets[appName]
       if (!allAppName.includes(appName)) {
         console.log(colors.red(`${appName} 在文件系统中不存在`))
         process.exit(-1)
       }
       if (!target) continue
       let execConfigs = target[scriptType]
-      if (!execConfigs) continue
-      if (!Array.isArray(execConfigs)) printErrorLog(`targets 中的${appName}.${scriptType}应该是一个数组`, true)
+      if (execConfigs && !Array.isArray(execConfigs)) printErrorLog(`targets 中的${appName}.${scriptType}应该是一个数组`, true)
       allowTargetMap[appAbsolutePath] = []
       execConfigs.forEach((group: any) => {
         if (!Array.isArray(group)) group = [group]
