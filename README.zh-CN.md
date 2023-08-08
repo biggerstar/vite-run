@@ -7,15 +7,15 @@
     <a href="https://img.shields.io/npm/l/vite-run">
       <img src="https://img.shields.io/npm/l/vite-run?" alt="license"/>
     </a>
-</p> 
+</p>
 <br/>
 
 
 **中文** | [English](./README.md)
 
 vite 多配置执行支持, 配置共享，像搭积木一样自由组合配置，
-颗粒度精确到单字段配置。  
-它可以完全替代`vite.config`,您无需在每个包中都创建一个`vite.config`配置  
+颗粒度精确到单字段配置。
+它可以完全替代`vite.config`,您无需在每个包中都创建一个`vite.config`配置
 该工具在`pnpm` 多包模式下开发
 
 
@@ -25,13 +25,13 @@ vite 多配置执行支持, 配置共享，像搭积木一样自由组合配置�
 
 ```shell
     yarn add vite-run -D
-``` 
+```
 
 - pnpm
 
 ```shell
     pnpm add vite-run -D
-``` 
+```
 
 ## Terminal commands
 
@@ -67,8 +67,8 @@ vite 多配置执行支持, 配置共享，像搭积木一样自由组合配置�
 后缀可以是`js`或者`ts`
 
 ```javascript
-import { defineConfig } from "vite-run";
-export default defineConfig({
+import { defineViteRunConfig } from "vite-run";
+export default defineViteRunConfig({
   // baseConfig:{},
   // packages:[],
   // target:{},
@@ -82,7 +82,7 @@ export default defineConfig({
 - type `Function | object`
 
     ```javascript
-    export default defineConfig({
+    export default defineViteRunConfig({
        baseConfig:(options)=>{  // 使用函数形式，options包含子包信息，可以动态生成配置
           return {
             resolve: {
@@ -106,9 +106,9 @@ export default defineConfig({
 - struct ``` Array<string>```
 
     ```javascript
-    export default defineConfig{{
+    export default defineViteRunConfig{{
        packages: [
-         'packages/*',    
+         'packages/*',
          'examples/vue3',
          './'     //  支持操作主包
        ]
@@ -120,20 +120,20 @@ export default defineConfig({
 - desc  `定义配置名和其要运行的[配置块]或者[配置块组]`
 - struct ``` { appName: { scriptName :[ configName | Array<configName> ] }}```
   > 比如下方web-app中的 build 列表中存在两组配置：
-  `umd` 是一个配置块，直接和baseConfig合并成最终配置。   
+  `umd` 是一个配置块，直接和baseConfig合并成最终配置。
   `['es','production']`是一个配置块组，
   会先将该组合并(配置重叠会以后面配置为主)成同一个配置之后，
   再和baseConfig合并成最终配置。
 
   ```javascript
-      export default defineConfig({
+      export default defineViteRunConfig({
         targets: {
           'lib-app':{
-             dev: ['watch']        
+             dev: ['watch']
           },
           'web-app': {
-             prod: [   
-               ['es','production'],  // 配置块组 
+             prod: [
+               ['es','production'],  // 配置块组
                'umd'   // 配置块
              ],
              dev:['10000']
@@ -144,13 +144,13 @@ export default defineConfig({
 
 **Other vite config block map**
 
-`vite.config` 和 `viterun.config`针对配置vite配置是存在区别的 :  
+`vite.config` 和 `viterun.config`针对配置vite配置是存在区别的 :
 `viterun`在原本vite的 配置上`使用一个对象包裹`起来，为每个vite配置块`命名`，
 原本的vite配置则作为该键名的值
 
 ```javascript
 // vite 配置结构
-export default defineConfig({
+export default defineViteRunConfig({
   build: {
     lib: {
        formats: ['es']
@@ -163,7 +163,7 @@ export default defineConfig({
 })
 //--------------------------------------------
 // viterun 配置结构
-export default defineConfig({
+export default defineViteRunConfig({
   build: {
     es:{     // 支持使用对象形式
       lib:{
@@ -195,7 +195,7 @@ export default defineConfig({
 ## viteRunLogPlugin
 
 您如果需要管控和优化控制台输出信息，viterun`内置`了一个`viteRunLogPlugin`插件
-该插件能控制vite默认日志输出 和 viterun工具的日志输出   
+该插件能控制vite默认日志输出 和 viterun工具的日志输出
 您可以直接导入使用，配置和使用信息请自行点击编辑器链接到d.ts文件中查看
 
 ```javascript
@@ -204,7 +204,7 @@ import { viteRunLogPlugin } from 'vite-run'
 
 ## interceptStdoutWriteLog
 
-如果您有拦截其他日志输出的需求，你可以使用`interceptStdoutWriteLog`函数,  
+如果您有拦截其他日志输出的需求，你可以使用`interceptStdoutWriteLog`函数,
 该插件能控制和拦截`所有`输出到控制台的字符串流信息
 
 ```javascript
@@ -213,7 +213,7 @@ interceptStdoutWriteLog((log)=>{
     console.warn(log)  // 如果console.log用不了，请使用console.warn
     // 返回 true 表示输出该日志，返回false表示不输出该日志，
     // 如果想修改日志，直接返回false，然后console.warn手动输出就行
-    return true 
+    return true
 })
 ```
 
@@ -221,10 +221,10 @@ interceptStdoutWriteLog((log)=>{
 ## 术语解释
 
 1. `配置块`： 比如下面配置中 `es` 就是配置块名称，
-   es对应的值便是原本vite配置的`build`对象，  
+   es对应的值便是原本vite配置的`build`对象，
    配置块也可以叫做vite配置块，指的就是vite配置中的一小部分，并为其取名方便后面自由组合配置
     ```javascript
-    export default defineConfig({
+    export default defineViteRunConfig({
       build: {
         es: {
           lib: {
@@ -237,13 +237,13 @@ interceptStdoutWriteLog((log)=>{
 2. `配置名称`： 比如下方的`dev`就是配置名称，里面包含多个vite配置块，
    dev数组里面每个数组成员(配置块 | 配置块组)最终都会生成一个独立的vite配置
    ```javascript
-   export default defineConfig({
+   export default defineViteRunConfig({
       targets: {
         'lib-app':{
            dev: [
              'watch'，
              'es'
-           ]        
+           ]
         },
       }
     })

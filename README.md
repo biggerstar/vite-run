@@ -7,15 +7,15 @@
     <a href="https://img.shields.io/npm/l/vite-run">
       <img src="https://img.shields.io/npm/l/vite-run?" alt="license"/>
     </a>
-</p> 
+</p>
 <br/>
- 
+
 
 **English** | [中文](./README.zh-CN.md)
 
 Multiple configuration execution support for vite, configuration sharing, and free combination of configurations like
-building blocks, Granularity is accurate to single field configuration      
-It can completely replace `vite.config`, you don't need to create a `vite.config` configuration in each package   
+building blocks, Granularity is accurate to single field configuration
+It can completely replace `vite.config`, you don't need to create a `vite.config` configuration in each package
 This tool is developed in `pnpm` multi package mode
 
 
@@ -25,13 +25,13 @@ This tool is developed in `pnpm` multi package mode
 
 ```shell
     yarn add vite-run -D
-``` 
+```
 
 - pnpm
 
 ```shell
     pnpm add vite-run -D
-``` 
+```
 
 ## Terminal commands
 
@@ -53,7 +53,7 @@ example：
 
 ## Simple Demonstration
 
-The following is just a simple demonstration, not a complete configuration.  
+The following is just a simple demonstration, not a complete configuration.
 Please refer to the complete configuration for more information [viterun.config.ts](./viterun.config.ts)
 
 **dev**
@@ -68,8 +68,8 @@ Please refer to the complete configuration for more information [viterun.config.
 similar to `vite.config` , The suffix can be `js` or `ts`
 
 ```javascript
-import { defineConfig } from "vite-run";
-export default defineConfig({
+import { defineViteRunConfig } from "vite-run";
+export default defineViteRunConfig({
   // baseConfig:{},
   // packages:[],
   // target:{},
@@ -84,7 +84,7 @@ export default defineConfig({
 - type `Function | object`
 
     ```javascript
-    export default defineConfig({
+    export default defineViteRunConfig({
        baseConfig:(options)=>{  // Using functional form, options contain subpackage information and can dynamically generate configurations
           return {
             resolve: {
@@ -109,9 +109,9 @@ export default defineConfig({
 - struct ``` Array<string>```
 
     ```javascript
-    export default defineConfig{{
+    export default defineViteRunConfig{{
        packages: [
-         'packages/*',    
+         'packages/*',
          'examples/vue3',
          './'     // Support the operation of the main package
        ]
@@ -125,23 +125,23 @@ the configuration block
 
 - desc  `Define the configuration name and the [configuration block] or [configuration block group] it wants to run`
 - struct ``` { appName: { scriptName :[ configName | Array<configName> ] }}```
-  > For example, there are two sets of configurations in the build list in the web app below:   
-  `Umd`is a configuration block that is directly merged with baseConfig to form the final configuration.  
+  > For example, there are two sets of configurations in the build list in the web app below:
+  `Umd`is a configuration block that is directly merged with baseConfig to form the final configuration.
   `['es', 'production'] ` is a configuration block group,
   After merging the combination (overlapping configurations will be dominated by later configurations) into the same
   configuration,
   Merge with baseConfig to form the final configuration.
 
   ```javascript
-      export default defineConfig({
+      export default defineViteRunConfig({
         targets: {
           'lib-app':{
-             dev: ['watch']        
+             dev: ['watch']
           },
           'web-app': {
-             prod: [   
-               ['es','production'],  // Configuration Block Group 
-               'umd'   // Configuration Block 
+             prod: [
+               ['es','production'],  // Configuration Block Group
+               'umd'   // Configuration Block
              ],
              dev:['10000']
           },
@@ -157,7 +157,7 @@ The original vite configuration serves as the value of the key name
 
 ```javascript
 // vite configuration structure
-export default defineConfig({
+export default defineViteRunConfig({
   build: {
     lib: {
        formats: ['es']
@@ -170,7 +170,7 @@ export default defineConfig({
 })
 //--------------------------------------------
 // viterun configuration structure
-export default defineConfig({
+export default defineViteRunConfig({
   build: {
     es:{     // Supports the use of object forms
       lib:{
@@ -221,7 +221,7 @@ interceptStdoutWriteLog((log)=>{
     console.warn(log)  // If console. log cannot be used, please use console. warn
     //Returning true indicates that the log is output, while returning false indicates that the log is not output,
     //If you want to modify the log, simply return false and manually output it from console. warn
-    return true 
+    return true
 })
 ```
 
@@ -234,7 +234,7 @@ interceptStdoutWriteLog((log)=>{
    refer to a small part of the vite configuration and are named for easy combination and configuration in the future
 
    ```javascript
-   export default defineConfig({
+   export default defineViteRunConfig({
      build: {
        es: {
          lib: {
@@ -247,17 +247,17 @@ interceptStdoutWriteLog((log)=>{
 2. `configuration name`: For example, `dev` below is the configuration name, which contains multiple vite configuration blocks,
    Each array member (configuration block | configuration block group) in the dev array will ultimately generate an independent vite configuration
    ```javascript
-   export default defineConfig({
+   export default defineViteRunConfig({
       targets: {
         'lib-app':{
            dev: [
              'watch'，
              'es'
-           ]        
+           ]
         },
       }
     })
    ```
-## License  
+## License
 
 MIT License.
