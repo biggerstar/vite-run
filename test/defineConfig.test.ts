@@ -1,14 +1,14 @@
-// 只手动测试dts是否报错，嫌麻烦懒得使用vitest或者jest
+// 只手动测试dts是否报错，嫌麻烦懒得使用vitest测试
 
-import {defineConfig} from "../src";
+import {defineViteRunConfig} from "../src";
 
 function getBaseConfig() {
   return {}
 }
 
 
-const config = defineConfig({
-  baseConfig: getBaseConfig,
+const config = defineViteRunConfig({
+  baseConfig:getBaseConfig,
   packages: [
     'packages/*',
     'examples/base/*',

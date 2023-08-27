@@ -9,7 +9,7 @@ import {PluginOption, UserConfig} from "vite";
 
 export type ViteRunSelfField = 'packages' | 'targets' | 'baseConfig'
 
-export type BaseConfigType = (options: ViteRunHandleFunctionOptions) => BaseConfigReturnType
+export type BaseConfigType = BaseConfigReturnType | ((options: ViteRunHandleFunctionOptions) => BaseConfigReturnType)
 
 export type BaseConfigReturnType = Promise<DeepPartial<DeepPartialViteUserConfig>> | DeepPartial<DeepPartialViteUserConfig>
 
