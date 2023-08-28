@@ -7,7 +7,7 @@ function getBaseConfig() {
 }
 
 
-const config = defineViteRunConfig({
+defineViteRunConfig({
   baseConfig:getBaseConfig,
   packages: [
     'packages/*',
@@ -61,3 +61,17 @@ const config = defineViteRunConfig({
   }
 })
 
+defineViteRunConfig(()=>{
+  return {
+    packages:{
+
+    },
+    build:{
+      test:{
+        rollupOptions:{
+
+        }
+      }
+    }
+  }
+})

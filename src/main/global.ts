@@ -15,9 +15,10 @@
  * */
 import {ViteRunOptions} from "@/types";
 
-export function defineViteRunConfig<OptionsData extends ViteRunOptions<OptionsData>>(options: OptionsData)
+export function defineViteRunConfig<OptionsData extends ViteRunOptions<OptionsData>>(options: OptionsData | (() => ViteRunOptions<OptionsData>))
   : ViteRunOptions<OptionsData> {
   // defineConfig不会对传入对象配置进行任何操作，目的只是为了外部使用者获得完整的类型提示
+  if (typeof options === 'function') return options()
   return options
 }
 

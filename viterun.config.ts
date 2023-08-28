@@ -1,11 +1,11 @@
 // import basicSsl from '@vitejs/plugin-basic-ssl'
 import {resolve} from "node:path";
-import {BaseConfigReturnType, defineConfig, ViteRunHandleFunctionOptions, viteRunLogPlugin} from "vite-run";
+import {BaseConfigReturnType, defineViteRunConfig, ViteRunHandleFunctionOptions, viteRunLogPlugin} from "vite-run";
 import createCopyDts from "vite-plugin-copy-dts";
 import dts from "vite-plugin-dts";
 
 
-export default defineConfig({
+export default defineViteRunConfig({
   baseConfig: getBaseConfig,
   packages: [
     'packages/*',

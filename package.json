@@ -9,7 +9,7 @@
     "dev:bin": "vite build -c config/vite.config.bin.js --watch",
     "dev:nobin": "vite build -c config/vite.config.js --watch",
     "build": "rimraf dist && vite build -c config/vite.config.js && vite build -c config/vite.config.bin.js",
-    "release": "npm run release:git && npm run release:npm",
+    "release": "npm run build && npm run release:git && npm run release:npm",
     "release:npm": "npm run build && npm publish",
     "release:git": "npm run -s build && git commit -am v$npm_package_version && git tag v$npm_package_version && git push --tags",
     "test:build": "npm run build && npm run test:types",
