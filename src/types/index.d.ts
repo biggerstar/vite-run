@@ -73,7 +73,7 @@ export type ToViteUserConfigs = {
   {
     [key: string | number | symbol]:
       Function
-      | ((options?: ViteRunHandleFunctionOptions) => DeepPartial<NoPluginsFiledUserConfig[Key]>)
+      | ((options: ViteRunHandleFunctionOptions) => DeepPartial<NoPluginsFiledUserConfig[Key]>)
       | DeepPartial<NoPluginsFiledUserConfig[Key]>
   }
 }

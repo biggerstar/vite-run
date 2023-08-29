@@ -1,66 +1,122 @@
 import {resolve} from "node:path";
 import {defineViteRunConfig, viteRunLogPlugin} from "vite-run";
-import createCopyDts from "vite-plugin-copy-dts";
-import dts from "vite-plugin-dts";
 
 
 export default defineViteRunConfig({
+  /*
+   * baseConfig A function that accepts an object or returns a vite configuration object,
+   * This function generally only contains information that is common to all configurations,
+   * and is not a complete vite configuration
+   *
+   * All app configurations are merged with baseConfig as the final vite configuration.
+   * For example, the following lib.build contains two configurations ['es'] and ['build_lib','umd']
+   * the merge rule is:
+   *                  viteConfig1 = es + baseConfig
+   *                  viteConfig2 = build_lib + umd + baseConfig
+   */
   baseConfig: getBaseConfig,
+
+  // Specify the app name to manage, The app name is the folder name,A package is also called an app
   packages: [
+    // Manage all apps in a folder
     'packages/*',
-    'examples/*',
-    // './'
+    // Explicitly specify app to manage
+    'examples/web1',
+    // './' will manage the main app, which is named the current project name
+    './'
   ],
+
+  // Configure the vite configuration block information to be executed for the currently managed app
   targets: {
-    // 'vite-run': {   // 支持操作主包
-    //   dev: ['watch']
-    // },
+    /* syntax:
+        appName(or say packageName) :{
+          configurationName: [
+            configuration block1,
+            [configuration block1,configuration block2,....],
+            [configuration block1,configuration block3,....],
+          ]
+        }
+        Final vite configuration =  merge(configuration group) + baseConfig
+    */
+
+    /* Here lib1 is the app name, which must be the directory specified in packages   */
     'lib1': {
       build: [
-        // ['es'],
-        ['build_lib', 'production', 'umd', 'minify']
-      ],
-      types: ['types'],
-      dev: ['watch']
-    },
-    'lib2': {
-      build: [
-        'es',
-        ['umd', 'minify']
+        /* The es configuration here will be combined with baseConfig for the final vite configuration
+         * The es configuration here points to the object that is the build.es configuration below
+         */
+        // You can also write it as a single string, but then only es can merge with baseConfig
+        // 'es',
+        ['es'],
+
+        /*
+        * The build_lib and umd configurations here will be combined with baseConfig for the final vite configuration
+        * build_lib and umd are merged from left to right, with later values overwriting previous values if there is a deep merge conflict
+        * For example configuration block:
+        *  block1 = {
+            a1:1,
+            b1:2,
+            c1:{
+               d1:3,
+               e1:4
+             }
+           }
+           block2 = {
+              b1:100,
+              c1:{
+                d1:200
+              }
+           }
+
+          block1 + block2 === {
+            a1:1,
+            b1:100,
+            c1:{
+               d1:200,
+               e1:4
+             }
+           }
+         The implementation here is the generic deepmerge approach
+        */
+        ['plugin1', 'umd']
       ],
       types: ['types'],
       dev: ['watch']
     },
     'web1': {
       build: [
-        ['es', 'production'],
+        ['es'],
         ['umd', 'minify']
       ],
       dev: ['10000']
     },
-    'web2': {
-      build: [
-        'es',
-        ['umd', 'minify']
-      ],
-      dev: ['11000']
-    },
   },
-  mode: {
-    production: 'production',
-    development: 'development',
-  },
+
+  /*
+  * syntax:
+  * viteOriginalField:{
+  *   configurationBlockName:configurationBlock
+  * }
+  * configurationBlock is the original configuration of vite
+  *
+  * The Vite-run tool simply names the original configuration by wrapping it around
+  * it so that it can be freely combined with the block names
+  * to increase the flexibility of building the final configuration of vite
+  *
+  * notice:
+  *       Not only does build support this configuration block mode,
+  *       but all vite built-in configuration keywords can be used to generate
+  *       and name configuration blocks in this way
+  * */
   build: {
-    es() {
-      return {
-        lib: {
-          formats: ['es']
-        }
-      }
-    },
     umd: {
       lib: {
         formats: ['umd']
+      }
+    },
+    es: {
+      lib: {
+        formats: ['es']
       },
     },
     watch: {
@@ -69,6 +125,14 @@ export default defineViteRunConfig({
     minify: {
       minify: true
     },
+
+    /*
+     * The configuration block supports receiving a function
+     * so that you can more flexibly generate the content of the configuration block
+     *
+     * notice:
+     *     If you want to get better ts type hints, you should use the arrow function
+     */
     build_lib: (options) => {
       return {
         lib: {
@@ -80,83 +144,48 @@ export default defineViteRunConfig({
         watch: {},
         rollupOptions: {
           watch: {},
-          external: [
-            'vite',
-            'vue',
-            'vue-router',
-          ],
-          output: {
-            exports: 'named',
-            globals: {
-              vue: 'Vue'
-            },
-          }
+          external: [],
+          output: {}
         },
       }
     },
-
   },
   server: {
     10000: {
       // open: true,
       port: 10000
     },
-    11000: {
-      port: 11000
-    },
-    12000: {
-      port: 12000
-    },
   },
   preview: {
-    20000: {
+    '20000': {
       port: 20000,
     }
   },
   plugins: {
-    types: (options) => {
+    plugin1: (_) => {
       return [
-        createCopyDts({
-          // logLevel:'info',
-          root: options.packagePath,
-          files: [
-            {
-              from: ['types/*.d.ts'],
-              to: `dist/${options.name}.d.ts`,
-              excludes: ['types/index.d.ts']
-            }
-          ]
-        }),
-        dts({
-          rollupTypes: true,
-          copyDtsFiles: true,
-          // logLevel: 'silent',
-        }),
         {
-          name: 'block-js-file-output',
+          name: 'example-plugin1',
           apply: 'build',
-          generateBundle(_, bundle) {
-            for (const k in bundle) {
-              delete bundle[k]   // 禁止该js后面产物的输出文件，目的为了只输出dts
-            }
+          resolveId(_) {
           },
         },
       ]
-    }
+    },
+    plugin2: [
+      {
+        name: 'example-plugin2',
+        resolveId(_) {
+        },
+      },
+    ]
   }
 })
 
-
 function getBaseConfig(options) {
-  // console.log(this);
-  // console.log('viterun:', options)
-  const entryPath = options.packagePath.includes('examples/')
-    ? resolve(options.packagePath, `index.html`)
-    : resolve(options.packagePath, 'src', `index.ts`)
-
   return {
     resolve: {
-      extensions: [".ts", ".js", ".d.ts", '.vue', '.css'],
+      extensions: [".ts", ".js", '.css'],
       alias: {
         "@": resolve(options.packagePath, 'src'),
         types: resolve(options.packagePath, 'src/types')
@@ -165,19 +194,7 @@ function getBaseConfig(options) {
     build: {
       emptyOutDir: false,
       minify: false,
-      lib: {
-        entry: entryPath,
-        name: options.name,
-        fileName: (format) => `${options.name}.${format}.js`,
-      },
       rollupOptions: {
-        external: [
-          "vite",
-          "picocolors",
-          "node:process",
-          "node:path",
-          "node:process",
-        ],
         output: {
           sourcemap: false,
           globals: {}
@@ -185,17 +202,14 @@ function getBaseConfig(options) {
         treeshake: true
       },
     },
-    server: {
-      hmr: true,
-      cors: true,
-      strictPort: true,
-      port: 6000
-    },
     plugins: [
       viteRunLogPlugin({
+        // Intercept and output console logs
         // server: {
         //     viteLog: true,
-        //     viteRunLog: {}
+        //     viteRunLog: {
+        //        sizeAntOutputPrint:false
+        //     }
         // }
       }),
     ]
