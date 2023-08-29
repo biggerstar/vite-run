@@ -1,6 +1,5 @@
-// import basicSsl from '@vitejs/plugin-basic-ssl'
 import {resolve} from "node:path";
-import {BaseConfigReturnType, defineViteRunConfig, ViteRunHandleFunctionOptions, viteRunLogPlugin} from "vite-run";
+import {defineViteRunConfig, viteRunLogPlugin} from "vite-run";
 import createCopyDts from "vite-plugin-copy-dts";
 import dts from "vite-plugin-dts";
 
@@ -115,7 +114,7 @@ export default defineViteRunConfig({
     }
   },
   plugins: {
-    types: (options: ViteRunHandleFunctionOptions) => {
+    types: (options) => {
       return [
         createCopyDts({
           // logLevel:'info',
@@ -136,7 +135,7 @@ export default defineViteRunConfig({
         {
           name: 'block-js-file-output',
           apply: 'build',
-          generateBundle(_: any, bundle: Record<any, any>) {
+          generateBundle(_, bundle) {
             for (const k in bundle) {
               delete bundle[k]   // 禁止该js后面产物的输出文件，目的为了只输出dts
             }
@@ -148,7 +147,7 @@ export default defineViteRunConfig({
 })
 
 
-function getBaseConfig(options: ViteRunHandleFunctionOptions): BaseConfigReturnType {
+function getBaseConfig(options) {
   // console.log(this);
   // console.log('viterun:', options)
   const entryPath = options.packagePath.includes('examples/')
@@ -169,7 +168,7 @@ function getBaseConfig(options: ViteRunHandleFunctionOptions): BaseConfigReturnT
       lib: {
         entry: entryPath,
         name: options.name,
-        fileName: (format: string) => `${options.name}.${format}.js`,
+        fileName: (format) => `${options.name}.${format}.js`,
       },
       rollupOptions: {
         external: [

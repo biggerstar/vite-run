@@ -7,9 +7,10 @@ export const issueUrl = 'https://www.github.com/biggerstar/issue'
 export const consolePrintConfigHeader = '[viterun.config]'
 export let consolePrintHeader = '[viterun] '
 export const targetConfigName = 'viterun.config'
-export const targetTemplateConfigName = 'viterun.config.ts'
+export const targetTemplateConfigName = 'default-viterun.config.ts'
+export const targetTemplateDocsConfigName = 'docs-viterun.config.ts'
 
-export const configSuffixList = ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs']
+export const configSuffixList = ['ts', 'tsx','mts', 'cts', 'js', 'mjs', 'cjs']
 export const selfConfigFields = ['packages', 'baseConfig', 'targets']
 
 /** 检查数组中重复的值并返回重复值的列表 */
@@ -63,7 +64,10 @@ export async function readLocalViteRunConfig(): Promise<Partial<ViteRunOptions>>
     ],
     merge: false,
   })
-  if (!config) throw new Error(colors.red(`The ${targetConfigName} configuration file cannot be found`))
+  if (!config) {
+    throw new Error(colors.red(`The ${targetConfigName} configuration file cannot be found`))
+  }
+
   return (config || {}) as Partial<ViteRunOptions<{}>>
 }
 

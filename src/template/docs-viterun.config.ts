@@ -1,6 +1,15 @@
 import {resolve} from "node:path";
 import {defineViteRunConfig, viteRunLogPlugin} from "vite-run";
 
+/*
+* This file is just a template, and running it directly will result in an error.
+* You can delete or add the configuration you need,
+* and configure it according to the actual project situation.
+* If you are already using this tool and do not need any comments,
+* you can run   vite run -- init - p   to regenerate the vite run. config configuration without comments
+* */
+
+
 
 export default defineViteRunConfig({
   /*
@@ -21,7 +30,7 @@ export default defineViteRunConfig({
     // Manage all apps in a folder
     'packages/*',
     // Explicitly specify app to manage
-    'examples/web1',
+    'examples/you-apps-folder',
     // './' will manage the main app, which is named the current project name
     './'
   ],
@@ -39,8 +48,8 @@ export default defineViteRunConfig({
         Final vite configuration =  merge(configuration group) + baseConfig
     */
 
-    /* Here lib1 is the app name, which must be the directory specified in packages   */
-    'lib1': {
+    /* Here 'you-app-name' is the managed by vite-run app name, which must be the directory specified in packages   */
+    'you-app-name' : {
       build: [
         /* The es configuration here will be combined with baseConfig for the final vite configuration
          * The es configuration here points to the object that is the build.es configuration below
@@ -83,7 +92,7 @@ export default defineViteRunConfig({
       types: ['types'],
       dev: ['watch']
     },
-    'web1': {
+    'you-app-name1': {
       build: [
         ['es'],
         ['umd', 'minify']

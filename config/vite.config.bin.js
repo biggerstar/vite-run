@@ -3,7 +3,7 @@ import {resolve} from "node:path";
 import {createRequire} from 'node:module'
 import {cwd} from "node:process";
 import copy from "rollup-plugin-copy";
-import {targetTemplateConfigName} from "../src/bin/vite-run/common.js";
+import {targetTemplateConfigName, targetTemplateDocsConfigName} from "../src/bin/vite-run/common.js";
 
 const requireCjs = createRequire(import.meta.url)
 const {name: moduleName} = requireCjs('../package.json')
@@ -21,6 +21,7 @@ export default defineConfig({
     copy({
       targets: [
         {src: `src/template/${targetTemplateConfigName}`, dest: 'dist'},
+        {src: `src/template/${targetTemplateDocsConfigName}`, dest: 'dist'},
       ]
     }),
   ],
@@ -32,7 +33,7 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/bin', `${moduleName}`, `${moduleName}`),
       name: moduleName,
       formats: ['es'],
-      fileName: (format, filename) => `${'bin'}/${moduleName}.js`
+      fileName: ( ) => `bin/${moduleName}.js`
     },
     rollupOptions: {
       external: [
