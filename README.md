@@ -72,7 +72,8 @@ example：
 ## Simple Demonstration
 
 The following is just a simple demonstration, not a complete configuration.
-Please refer to the complete configuration for more information [viterun.config.ts](./viterun.config.ts)
+Please refer to the complete configuration
+for more information [viterun.config.ts](./src/template/docs-viterun.config.ts)
 
 **dev**
 ![dev](./images/dev.png)

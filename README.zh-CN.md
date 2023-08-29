@@ -66,7 +66,7 @@ options:
 ## Simple Demonstration
 
 下方只是简单演示示例，并非完整配置，
-完整配置请见[viterun.config.ts](./viterun.config.ts)
+完整配置请见[viterun.config.ts](./src/template/docs-viterun.config.ts)
 
 **dev**
 ![dev](./images/dev.png)
