@@ -10,55 +10,55 @@ const {name: moduleName} = requireCjs('../package.json')
 const __dirname = cwd()
 
 export default defineConfig({
-    root: __dirname,
-    resolve: {
-        extensions: [".ts", ".js", ".d.ts"],
-        alias: {
-            "@": resolve(__dirname, 'src'),
-        }
-    },
-    plugins: [
-        createCopyDts({
-            files: [
-                {
-                    from: 'types/*.d.ts',
-                    to: `dist/index.d.ts`
-                }
-            ]
-        }),
-        dts({
-            rollupTypes: true,
-            copyDtsFiles: true,
-        })
-    ],
-    build: {
-        emptyOutDir: false,
-        outDir: 'dist',
-        minify: false,
-        lib: {
-            entry: resolve(__dirname, 'src', `index.ts`),
-            name: moduleName,
-            formats: ['es', 'cjs'],
-            fileName: (format, filename) => `${moduleName}.${format}.js`,
-        },
-        rollupOptions: {
-            external: [
-                'node:module',
-                'node:process',
-                'node:path',
-                'node:fs',
-                'node:url',
-                'commander',
-                'glob',
-                'vite',
-                'picocolors',
-                'unconfig',
-            ],
-            output: {
-                sourcemap: false,
-            },
-            treeshake: true
-        },
+  root: __dirname,
+  resolve: {
+    extensions: [".ts", ".js", ".d.ts"],
+    alias: {
+      "@": resolve(__dirname, 'src'),
     }
+  },
+  plugins: [
+    createCopyDts({
+      files: [
+        {
+          from: 'types/*.d.ts',
+          to: `dist/index.d.ts`
+        }
+      ]
+    }),
+    dts({
+      rollupTypes: true,
+      copyDtsFiles: true,
+    })
+  ],
+  build: {
+    emptyOutDir: false,
+    outDir: 'dist',
+    minify: false,
+    lib: {
+      entry: resolve(__dirname, 'src', `index.ts`),
+      name: moduleName,
+      formats: ['es', 'cjs'],
+      fileName: (format, filename) => `${moduleName}.${format}.js`,
+    },
+    rollupOptions: {
+      external: [
+        'node:module',
+        'node:process',
+        'node:path',
+        'node:fs',
+        'node:url',
+        'commander',
+        'glob',
+        'vite',
+        'picocolors',
+        'unconfig',
+      ],
+      output: {
+        sourcemap: false,
+      },
+      treeshake: true
+    },
+  }
 })
 

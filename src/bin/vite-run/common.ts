@@ -7,6 +7,8 @@ export const issueUrl = 'https://www.github.com/biggerstar/issue'
 export const consolePrintConfigHeader = '[viterun.config]'
 export let consolePrintHeader = '[viterun] '
 export const targetConfigName = 'viterun.config'
+export const targetTemplateConfigName = 'viterun.config.ts'
+
 export const configSuffixList = ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs']
 export const selfConfigFields = ['packages', 'baseConfig', 'targets']
 

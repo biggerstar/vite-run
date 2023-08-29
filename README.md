@@ -18,7 +18,6 @@ building blocks, Granularity is accurate to single field configuration
 It can completely replace `vite.config`, you don't need to create a `vite.config` configuration in each package
 This tool is developed in `pnpm` multi package mode
 
-
 ## install
 
 - yarn
@@ -35,8 +34,27 @@ This tool is developed in `pnpm` multi package mode
 
 ## Terminal commands
 
+Quickly create a `viterun.config` configuration template,
+`viterun` will automatically recognize the current `js` or  `ts` project and create a configuration file with the
+corresponding suffix
+
 -   ```shell
-    vite-run [configuration name] [?appNames]...
+    vite-run --init
+    ```
+
+When you create a configuration template,
+you will forcibly overwrite the existing local configuration, if any
+
+-   ```shell
+    vite-run --init  -f
+    ```
+
+Run the configuration name defined in the `targets` configuration,
+If appNames is not specified, all configurations containing the configuration name will run,
+If you specify an app name, only the configuration of the target app is run, and multiple appNames are supported
+
+-   ```shell
+    vite-run [configuration name]  [?appName1] [?appName2] ...
     ```
 
 example：
@@ -79,7 +97,8 @@ export default defineViteRunConfig({
 
 **baseConfig**
 
-- desc `For shared vite configuration, all configuration blocks will be merged with it as the final configuration information`
+-
+desc `For shared vite configuration, all configuration blocks will be merged with it as the final configuration information`
 
 - type `Function | object`
 
@@ -104,7 +123,8 @@ export default defineViteRunConfig({
 
 **packages**
 
-- desc  `The list of sub packages to be managed supports global and file paths, and global matching only supports ending with an * sign`
+-
+desc  `The list of sub packages to be managed supports global and file paths, and global matching only supports ending with an * sign`
 
 - struct ``` Array<string>```
 
@@ -198,7 +218,6 @@ export default defineViteRunConfig({
 
 ```
 
-
 ## viteRunLogPlugin
 
 If you need to control and optimize console output information, viterun has a `built-in` `viteRunLogPlugin` plugin
@@ -225,7 +244,6 @@ interceptStdoutWriteLog((log)=>{
 })
 ```
 
-
 ## Terminology
 
 1. `configuration block`: For example, in the following configuration, `es` is the name of the configuration block,
@@ -244,8 +262,10 @@ interceptStdoutWriteLog((log)=>{
      }
    })
    ```
-2. `configuration name`: For example, `dev` below is the configuration name, which contains multiple vite configuration blocks,
-   Each array member (configuration block | configuration block group) in the dev array will ultimately generate an independent vite configuration
+2. `configuration name`: For example, `dev` below is the configuration name, which contains multiple vite configuration
+   blocks,
+   Each array member (configuration block | configuration block group) in the dev array will ultimately generate an
+   independent vite configuration
    ```javascript
    export default defineViteRunConfig({
       targets: {
@@ -258,6 +278,7 @@ interceptStdoutWriteLog((log)=>{
       }
     })
    ```
+
 ## License
 
 MIT License.
