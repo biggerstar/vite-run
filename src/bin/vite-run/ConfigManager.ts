@@ -29,7 +29,7 @@ export class ConfigManager {
   /** 获取某个配置的值 */
   private getConfig(name: string): configItemType {
     const config = this.allConfigItem[name]
-    if (!config){
+    if (!config) {
       printErrorLog('No configuration with name' + name + 'found in configuration', true)
     }
     return config
@@ -58,7 +58,7 @@ export class ConfigManager {
   private extractAllConfigItem() {
     for (const viteFieldName in this.config) {
       const items = this.config[viteFieldName]
-      if (typeof items !== 'object'){
+      if (typeof items !== 'object') {
         printErrorLog(
           ` The ${viteFieldName} field should be a normal js native object, check to see if it is defined`
           , true)
@@ -111,7 +111,7 @@ export class ConfigManager {
   /** 合并指定名称的config配置，传入allConfigItem中的名称，也就是外部定义的配置名 */
   private mergeConfigs(...args: any[]): Record<any, any> {
     let result = {}
-    if (args.length === 0){
+    if (args.length === 0) {
       printErrorLog(colors.red('An empty array exists in the targets configuration'), true)
     }
 
@@ -136,19 +136,21 @@ export class ConfigManager {
       // 如果当前没有明确指定某几个app，则默认执行所有当前已经存在targets定义的app
       return targets[appName][scriptType]
     })
+    if (allowApps.length === 0) {
+      printErrorLog(`The ${scriptType} configuration name was not found in targets`, true)
+    }
     for (let index in allowApps) {
       const appName = allowApps[index] // 外部用户targets中设定的相对主项目地址的能指向子包的字段路径
       const appAbsolutePath = <string>allApp.find(path => basename(path) === appName)
       const target /* 某个app的target配置对象 */ = targets[appName]
       if (!allAppName.includes(appName)) {
-        console.log(colors.red(`${appName}
-      Does not exist in the file system`))
+        console.log(colors.red(`${appName} Does not exist in the file system`))
         process.exit(-1)
       }
       if (!target) continue
       let execConfigs: [] = target[scriptType]
       if (execConfigs && !Array.isArray(execConfigs)) {
-        printErrorLog(`  targets ${appName}.${scriptType} It should be an array`, true)
+        printErrorLog(`targets ${appName}.${scriptType} It should be an array`, true)
       }
       allowTargetMap[appAbsolutePath] = []
       for (let group: string | string[] of execConfigs) {
