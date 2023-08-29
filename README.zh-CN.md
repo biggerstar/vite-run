@@ -34,18 +34,16 @@ vite 多配置执行支持, 配置共享，像搭积木一样自由组合配置�
 
 ## Terminal commands
 
-快速创建`viterun.config`配置模板，`viterun`将会自动识别当前是`js`或者`ts`项目并创建对应后缀的配置文件
-
+快速创建`viterun.config`配置模板，
+`viterun`将会自动识别当前是`js`或者`ts`项目并创建对应后缀的配置文件
+options:
+- `--init` 在根目录创建模板配置文件
+- `-f` 创建配置模板时强制覆盖本地已存在配置，如果存在的话
+- `-p` 创建一个不包含使用注释的viterun.config文件
 -   ```shell
-    vite-run --init
+    vite-run --init [? -f -p]
     ```
-
-创建配置模板时强制覆盖本地已存在配置，如果存在的话
-
--   ```shell
-    vite-run --init  -f
-    ```
-
+---
 运行在targets配置中定义的配置名称，
 如果未指定appNames将运行包含该配置名称的所有配置，
 如果指定app名称则只会运行目标app的配置，appNames支持多个

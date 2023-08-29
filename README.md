@@ -35,20 +35,20 @@ This tool is developed in `pnpm` multi package mode
 ## Terminal commands
 
 Quickly create a `viterun.config` configuration template,
-`viterun` will automatically recognize the current `js` or  `ts` project and create a configuration file with the
-corresponding suffix
+`viterun` will automatically recognize that the current project is `js` or `ts`
+and create a configuration file with the corresponding suffix
 
 -   ```shell
-    vite-run --init
+    vite-run --init [? -f -p]
     ```
 
-When you create a configuration template,
-you will forcibly overwrite the existing local configuration, if any
+options:
 
--   ```shell
-    vite-run --init  -f
-    ```
+- `--init` Create a template configuration file in the root directory
+- `-f` When you create a configuration template, you will forcibly overwrite the existing local configuration, if any
+- `-p` Create a viterun.config file without using comments
 
+---
 Run the configuration name defined in the `targets` configuration,
 If appNames is not specified, all configurations containing the configuration name will run,
 If you specify an app name, only the configuration of the target app is run, and multiple appNames are supported
@@ -98,6 +98,7 @@ export default defineViteRunConfig({
 **baseConfig**
 
 -
+
 desc `For shared vite configuration, all configuration blocks will be merged with it as the final configuration information`
 
 - type `Function | object`
@@ -124,6 +125,7 @@ desc `For shared vite configuration, all configuration blocks will be merged wit
 **packages**
 
 -
+
 desc  `The list of sub packages to be managed supports global and file paths, and global matching only supports ending with an * sign`
 
 - struct ``` Array<string>```
