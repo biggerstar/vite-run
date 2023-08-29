@@ -1,6 +1,6 @@
 {
   "name": "vite-run",
-  "version": "1.2.1",
+  "version": "1.2.5",
   "type": "module",
   "bin": {
     "vite-run": "./dist/bin/vite-run.js"
@@ -44,7 +44,6 @@
     "commander": "^11.0.0",
     "glob": "^10.3.3",
     "picocolors": "^1.0.0",
-    "rollup-plugin-copy": "^3.4.0",
     "unconfig": "^0.3.9"
   },
   "devDependencies": {
@@ -53,12 +52,15 @@
     "typescript": "^5.1.6",
     "vite": "^4.4.7",
     "vite-plugin-copy-dts": "0.0.5",
-    "vite-plugin-dts": "^3.2.0"
+    "vite-plugin-dts": "^3.2.0",
+    "rollup-plugin-copy": "^3.4.0"
   },
   "keywords": [
     "vite",
     "build",
     "env",
-    "config"
+    "config",
+    "multiple",
+    "monorepo"
   ]
 }

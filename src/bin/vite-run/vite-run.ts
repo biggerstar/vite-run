@@ -23,7 +23,7 @@ async function execViteTarget(args) {
 
 const templateMapping = {
   p: targetTemplateConfigName,
-  default: targetTemplateDocsConfigName
+  docs: targetTemplateDocsConfigName
 }
 
 function copyViteRunConfig(argMap) {
@@ -35,7 +35,7 @@ function copyViteRunConfig(argMap) {
     const res = glob.globSync(`${cwd()}/src/**/*.{ts,tsx}`)
     let suffix = res.length > 0 ? '.ts' : '.js'
     const configFileName = `${targetConfigName}${suffix}`
-    let templateName = 'default'
+    let templateName = 'docs'
     if (argMap.p) templateName = 'p'
     const configPath = resolve(filePath, `../../${templateMapping[templateName]}`)
     let toPath = resolve(cwd(), `./${configFileName}`)
