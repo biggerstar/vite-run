@@ -43,7 +43,7 @@ function copyViteRunConfig(argMap) {
     .name('vite-run')
     .option('--init', 'Initialize Configuration Template')
     .option('-f', 'Force overwrite of local viterun.config file during initialization')
-    .description(colors.green('\u25B6  ' + '用于定义所有子包多个不同的vite打包配置，并进行统一管理' + ' \u25C0'))
+    .description(colors.green('\u25B6  ' + 'Used to define multiple different vite packaging configurations for all subpackages and manage them uniformly' + ' \u25C0'))
     .version(packVersion)
     /* @ts-ignore */
     .action(async (argMap: any, options: any) => {

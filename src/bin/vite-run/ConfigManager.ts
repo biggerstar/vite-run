@@ -5,12 +5,12 @@ import {
   readLocalViteRunConfig,
   selfConfigFields
 } from "@/bin/vite-run/common";
-import colors from "picocolors";
 import {configItemType, ViteRunHandleFunctionOptions, ViteRunOptions} from "@/types";
-import process from "node:process";
+import colors from "picocolors";
 import {globSync} from "glob";
-import {basename, resolve} from "node:path";
 import {mergeConfig} from "vite";
+import {basename, resolve} from "node:path";
+import process from "node:process";
 import {patchToViteEngine} from "@/bin/vite-run/patch";
 
 export class ConfigManager {
@@ -29,7 +29,9 @@ export class ConfigManager {
   /** 获取某个配置的值 */
   private getConfig(name: string): configItemType {
     const config = this.allConfigItem[name]
-    if (!config) printErrorLog('在配置中没有找到名称为 ' + name + ' 的配置', true)
+    if (!config){
+      printErrorLog('No configuration with name' + name + 'found in configuration', true)
+    }
     return config
   }
 
@@ -47,14 +49,20 @@ export class ConfigManager {
     const repeatField = findDuplicates(values)
     if (repeatField.length) {
       console.log(repeatField);
-      printErrorLog(`配置中有以下${repeatField.length}个名称命名冲突:  ${repeatField}`, isExit)
+      printErrorLog(
+        `The following ${repeatField.length} names have naming conflicts in the configuration: ${repeatField}`
+        , isExit)
     }
   }
 
   private extractAllConfigItem() {
     for (const viteFieldName in this.config) {
       const items = this.config[viteFieldName]
-      if (typeof items !== 'object') printErrorLog(`${viteFieldName} 字段应该是一个普通js对象,请检查一下是否定义`, true)
+      if (typeof items !== 'object'){
+        printErrorLog(
+          ` The ${viteFieldName} field should be a normal js native object, check to see if it is defined`
+          , true)
+      }
       for (const configName in items) {
         this.allConfigItem[configName] = {
           viteName: viteFieldName,   // vite config中的顶层字段，比如build , mode, publicDir 等
@@ -87,7 +95,9 @@ export class ConfigManager {
         const parts = packagePart.split('/')
         parts.pop()   // 只允许尾部带 * 号，先pop出再检测前面是否还带*号，如果带的话为不合法匹配
         if (parts.join('/').includes('*')) {
-          console.log(colors.red('定义 packages 路径匹配的时候，只允许尾部带* 号匹配,请检查您的packages定义: ' + packagePart))
+          console.log(colors.red(
+            'When defining packages path matching, ' +
+            'only the trailing asterisk is allowed to match. Please check your packages definition: ' + packagePart));
           process.exit(-1)
         }
         packagePart = packagePart.replaceAll(/\*+/gi, '*')  // 将检测后只有尾部带*的限制在一个,所以定义任意个最后都会被更改为1个
@@ -101,7 +111,10 @@ export class ConfigManager {
   /** 合并指定名称的config配置，传入allConfigItem中的名称，也就是外部定义的配置名 */
   private mergeConfigs(...args: any[]): Record<any, any> {
     let result = {}
-    if (args.length === 0) printErrorLog(colors.red('在targets配置中存在空数组'), true)
+    if (args.length === 0){
+      printErrorLog(colors.red('An empty array exists in the targets configuration'), true)
+    }
+
     for (const k in args) {
       const configData = args[k]
       result = mergeConfig(result, configData, false)
@@ -128,18 +141,25 @@ export class ConfigManager {
       const appAbsolutePath = <string>allApp.find(path => basename(path) === appName)
       const target /* 某个app的target配置对象 */ = targets[appName]
       if (!allAppName.includes(appName)) {
-        console.log(colors.red(`${appName} 在文件系统中不存在`))
+        console.log(colors.red(`${appName}
+      Does not exist in the file system`))
         process.exit(-1)
       }
       if (!target) continue
       let execConfigs: [] = target[scriptType]
-      if (execConfigs && !Array.isArray(execConfigs)) printErrorLog(`targets 中的${appName}.${scriptType}应该是一个数组`, true)
+      if (execConfigs && !Array.isArray(execConfigs)) {
+        printErrorLog(`  targets ${appName}.${scriptType} It should be an array`, true)
+      }
       allowTargetMap[appAbsolutePath] = []
       for (let group: string | string[] of execConfigs) {
         if (!Array.isArray(group)) group = [group]
         let groupConfigList = []
         for (const configName of group) {
-          if (!configName) printErrorLog('在targets配置的数组中存在空定义,值为 undefined', true)
+          if (!configName) {
+            printErrorLog(
+              'There is an empty definition in the array of targets configured with the value undefined'
+              , true)
+          }
           const configInfo = this.getConfig(configName)
           let customConfig = configInfo.value
           if (isFunction(customConfig)) {

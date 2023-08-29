@@ -46,7 +46,7 @@ export function printErrorLog(log: string, isProcessExit = false) {
 }
 
 export function printIssueLog(log: string, isExit = false) {
-  console.log(colors.red(consolePrintConfigHeader + log + ':  这是个预料之外的错误，请将其反馈给开发者'), issueUrl)
+  console.log(colors.red(consolePrintConfigHeader + log + ':  This is an unexpected bug, please report it to the developer'), issueUrl)
   if (isExit) process.exit(-1)
 }
 
@@ -63,7 +63,7 @@ export async function readLocalViteRunConfig(): Promise<Partial<ViteRunOptions>>
     ],
     merge: false,
   })
-  if (!config) throw new Error(colors.red(`找不到${targetConfigName}配置文件`))
+  if (!config) throw new Error(colors.red(`The ${targetConfigName} configuration file cannot be found`))
   return (config || {}) as Partial<ViteRunOptions<{}>>
 }
 

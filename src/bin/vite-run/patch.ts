@@ -36,7 +36,7 @@ export async function patchToViteEngine(type: supportViteMethod, viteConfig: any
     }
       break
     default : {
-      printLog(colors.red(`[patchToViteEngine]${type}未被支持`,), true)
+      printLog(colors.red(`[patchToViteEngine]${type}not supported`,), true)
     }
   }
 }
