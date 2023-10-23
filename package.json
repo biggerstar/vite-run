@@ -1,6 +1,6 @@
 {
   "name": "vite-run",
-  "version": "1.2.5",
+  "version": "1.2.12",
   "type": "module",
   "bin": {
     "vite-run": "./dist/bin/vite-run.js"
@@ -39,7 +39,7 @@
   "repository": {
     "url": "https://github.com/biggerstar/vite-run"
   },
-  "description": "Vite 多配置运行行支持",
+  "description": "Vite multi-configuration monorepo mode operation support (Vite monorepo模式多配置运行支持)",
   "dependencies": {
     "commander": "^11.0.0",
     "glob": "^10.3.3",

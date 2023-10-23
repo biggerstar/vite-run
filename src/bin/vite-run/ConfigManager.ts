@@ -30,7 +30,7 @@ export class ConfigManager {
   private getConfig(name: string): configItemType {
     const config = this.allConfigItem[name]
     if (!config) {
-      printErrorLog('No configuration with name' + name + 'found in configuration', true)
+      printErrorLog('No configuration with name ' + name + ' found in configuration', true)
     }
     return config
   }
