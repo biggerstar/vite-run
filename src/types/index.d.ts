@@ -11,15 +11,16 @@ export type ViteRunSelfField = 'packages' | 'targets' | 'baseConfig'
 
 export type BaseConfigType = BaseConfigReturnType | ((options: ViteRunHandleFunctionOptions) => BaseConfigReturnType)
 
-export type BaseConfigReturnType = Promise<DeepPartial<DeepPartialViteUserConfig>> | DeepPartial<DeepPartialViteUserConfig>
+export type BaseConfigReturnType =
+  Promise<DeepPartial<DeepPartialViteUserConfig>>
+  | DeepPartial<DeepPartialViteUserConfig>
 
 export type DeepPartialViteUserConfig = DeepPartial<NoPluginsFiledUserConfig> & { plugins?: PluginOption }
 
-/** targets下执行目标的类型，也就是命令行执行时 vite-run XXX 指向的对象,会提取当前用户已定义配置的名字，允许类型为单字符串或者字符串数组 */
-export type TargetsScriptType<Options> = ExtractConfigsFields<Options> | ExtractConfigsFields<Options>[]
+/** targets下执行目标的类型，也就是命令行执行时 vite-run XXX 指向的对象,会提取当前用户已定义配置的名字，允许类型为字符串数组 */
+export type TargetsScriptType<Options> = ExtractConfigsFields<Options>[]
 
-
-export type TargetsOptions<Options> = Record<any, Record<any, Array<TargetsScriptType<Options>>>>
+export type TargetsOptions<Options> = Record<string, Record<string, Array<TargetsScriptType<Options>>>>
 
 /** 提取ts类型声明所有的值Values */
 export type Values<T> = T[keyof T];
@@ -48,7 +49,7 @@ export type ViteRunSelfOptions<Options extends Record<any, any>> = {
   packages?: Array<string>;
   /** 定义要操作包的位置和适用该包的规则，这里说的规则指的是在configs中定义的配置，
    * 编译的时候按上下文从上到下定义的顺序编译(因为可能后面的包依赖之前的包) */
-  targets?: TargetsOptions<Options>
+  targets?: TargetsOptions<Options> | (() => TargetsOptions<Options>) | Function
 }
 
 /** plugins 字段的类型里面会无限嵌套，在DeepPartial类型检查的时候会出问题，单独拎出来处理 */
@@ -62,7 +63,11 @@ export type ViteRunPluginOptions = {
   plugins?: Record<string, VitePluginFieldType>
 }
 /** viteRun  defineConfig函数入口对象的类型 */
-export type ViteRunOptions<Options={}> = ToViteUserConfigs & ViteRunSelfOptions<Options> & ViteRunPluginOptions & AnyRecord
+export type ViteRunOptions<Options = {}> =
+  ToViteUserConfigs
+  & ViteRunSelfOptions<Options>
+  & ViteRunPluginOptions
+  & AnyRecord
 
 /** 去除plugins字段的vite UserConfig配置 */
 export type NoPluginsFiledUserConfig = Omit<UserConfig, 'plugins'>

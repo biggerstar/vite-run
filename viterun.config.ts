@@ -1,5 +1,5 @@
 import {resolve} from "node:path";
-import {defineViteRunConfig, viteRunLogPlugin} from "vite-run";
+import {defineViteRunConfig, viteRunLogPlugin} from "./src";
 import createCopyDts from "vite-plugin-copy-dts";
 import dts from "vite-plugin-dts";
 
@@ -11,40 +11,43 @@ export default defineViteRunConfig({
     'examples/*',
     // './'
   ],
-  targets: {
-    // 'vite-run': {   // 支持操作主包,名称为根目录文件夹名称
-    //   dev: ['watch']
-    // },
-    'lib1': {
-      build: [
-        // ['es'],
-        ['build_lib', 'umd', 'minify']
-      ],
-      types: ['types'],
-      dev: ['watch'],
-    },
-    'lib2': {
-      build: [
-        'es',
-        ['umd', 'minify']
-      ],
-      types: ['types'],
-      dev: ['watch']
-    },
-    'web1': {
-      build: [
-        ['es', 'production'],
-        ['umd', 'minify']
-      ],
-      dev: ['10000']
-    },
-    'web2': {
-      build: [
-        'es',
-        ['umd', 'minify']
-      ],
-      dev: ['11000']
-    },
+  /* 支持对象和函数 */
+  targets: () => {
+    return {
+      // 'vite-run': {   // 支持操作主包,名称为根目录文件夹名称
+      //   dev: ['watch']
+      // },
+      'lib1': {
+        build: [
+          // ['es'],
+          ['build_lib', 'umd', 'minify']
+        ],
+        types: ['types'],
+        dev: ['watch'],
+      },
+      'lib2': {
+        build: [
+          'es',
+          ['umd', 'minify']
+        ],
+        types: ['types'],
+        dev: ['watch']
+      },
+      'web1': {
+        build: [
+          ['es', 'production'],
+          ['umd', 'minify']
+        ],
+        dev: ['10000']
+      },
+      'web2': {
+        build: [
+          'es',
+          ['umd', 'minify']
+        ],
+        dev: ['11000']
+      },
+    }
   },
   mode: {
     production: 'production',

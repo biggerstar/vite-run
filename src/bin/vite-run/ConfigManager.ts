@@ -31,12 +31,14 @@ export class ConfigManager {
   private getConfig(name: string): configItemType {
     const config = this.allConfigItem[name]
     if (!config) {
-      printErrorLog('No configuration with name ' + name + ' found in configuration', true)
+      printErrorLog(`No configuration with name '${name}' found in configuration`, true)
     }
     return config
   }
 
-  /** 获取用户定义的完整配置 */
+  /**
+   * 获取用户所定义 vite专属 + vite-run专属 的完整配置
+   * */
   private getFullConfig(): Record<string, any> {
     return {
       ...this.config,
@@ -44,7 +46,7 @@ export class ConfigManager {
     }
   }
 
-  /** 检查配置中是否有重复名称的配置 */
+  /** 检查 target 配置中是否有重复名称的配置 */
   private checkConfigRepeat(isExit: boolean = false) {
     const values = Object.values(this.config).map((item: any) => Object.keys(item)).flat()
     const repeatField = findDuplicates(values)
@@ -56,6 +58,9 @@ export class ConfigManager {
     }
   }
 
+  /**
+   * 将所有的配置块提取出来放置到 this.allConfigItem 中
+   * */
   private extractAllConfigItem() {
     for (const viteFieldName in this.config) {
       const items = this.config[viteFieldName]
@@ -73,23 +78,28 @@ export class ConfigManager {
     }
   }
 
-  /** 初始化，必须先调用才能使用该工具 */
+  /**
+   * 初始化，必须先调用才能使用该工具
+   * */
   public async init() {
     //@ts-ignore
     const fullConfig = <Record<any, any>>await readLocalViteRunConfig()
     for (const k in fullConfig) {
       const val = fullConfig[k]
       // @ts-ignore
-      if (selfConfigFields.includes(k)) this.viteRunConfig[k] = val   // viteRun自有的配置
+      if (selfConfigFields.includes(k)) this.viteRunConfig[k] = val   // 过滤掉viteRun自有的配置
       else this.config[k] = val   // 属于vite可用的配置
     }
     this.checkConfigRepeat(true)
     this.extractAllConfigItem()
   }
 
+  /**
+   * 基于 packages 配置字段， 获取当前需要管理的所有的包路径
+   * */
   private async getAllLocalPackage() {
     const localConfig = await readLocalViteRunConfig()
-    const {packages = []} = localConfig
+    const packages = isFunction(localConfig.packages) ? localConfig.packages.call(localConfig) : localConfig.packages  // 获取 packages 配置，如果是函数则获取真实配置对象
     let allApp: string[] = []
     packages.forEach(packagePart => {
       if (packagePart.includes('*')) {  // 带有*号合法性检测， 防止比如 xx/**/** 全遍历某文件夹下所有文件
@@ -131,27 +141,27 @@ export class ConfigManager {
     const allApp = await this.getAllLocalPackage()
     const allAppName = allApp.map(absolutePath => basename(absolutePath))
     const localConfig = this.getFullConfig()
-    const {targets = {}} = localConfig
+    const targets = isFunction(localConfig.targets) ? localConfig.targets.call(localConfig) : localConfig.targets  // 获取targets配置，如果是函数则获取真实配置对象
     let allowTargetMap: Record<any, any> = {}
     if (allowApps.length === 0) allowApps = Object.keys(targets).filter((appName: string) => {
       // 如果当前没有明确指定某几个app，则默认执行所有当前已经存在targets定义的app
       return targets[appName][scriptType]
     })
     if (allowApps.length === 0) {
-      printErrorLog(`The ${scriptType} configuration name was not found in targets`, true)
+      printErrorLog(`The '${scriptType}' configuration name was not found in targets`, true)
     }
     for (let index in allowApps) {
       const appName = allowApps[index] // 外部用户targets中设定的相对主项目地址的能指向子包的字段路径
       const appAbsolutePath = <string>allApp.find(path => basename(path) === appName)
       const target /* 某个app的target配置对象 */ = targets[appName]
       if (!allAppName.includes(appName)) {
-        console.log(colors.red(`${appName} Does not exist in the file system`))
+        console.log(colors.red(`'${appName}' Does not exist in the file system`))
         process.exit(-1)
       }
       if (!target) continue
       let execConfigs: [] = target[scriptType]
       if (execConfigs && !Array.isArray(execConfigs)) {
-        printErrorLog(`targets ${appName}.${scriptType} It should be an array`, true)
+        printErrorLog(`targets '${appName}.${scriptType}' It should be an array`, true)
       }
       allowTargetMap[appAbsolutePath] = []
       for (let group: string | string[] of execConfigs) {
@@ -166,7 +176,7 @@ export class ConfigManager {
           const configInfo = this.getConfig(configName)
           let customConfig = configInfo.value
           if (isFunction(customConfig)) {
-            customConfig = await this.getRealConfig(appAbsolutePath, <object>customConfig)
+            customConfig = await this.getRealConfigBlock(appAbsolutePath, <object>customConfig)
           }
           groupConfigList.push({
             [configInfo.viteName]: customConfig
@@ -190,12 +200,16 @@ export class ConfigManager {
   }
 
 
-  /** 获取vite配置，传入对象的话原样返回，传入函数执行后获取返回对象 */
-  private async getRealConfig(packagePath: string, viteConfigPart: Record<any, any> | Function, setup: { type?: string } = {}) {
+  /**
+   * 获取vite配置块，
+   * 情况1：传入对象的话原样返回，
+   * 情况2：传入函数执行后获取返回对象
+   * */
+  private async getRealConfigBlock(packagePath: string, viteConfigBlock: Record<any, any> | Function, setup: { type?: string } = {}) {
     const rootPackagePath = resolve(process.cwd(), packagePath)  // 子包的根目录
     const localConfig = this.getFullConfig()
     let options = {}
-    if (isFunction(viteConfigPart)) {
+    if (isFunction(viteConfigBlock)) {
       options = {
         ...setup,
         name: packagePath.split('/').filter(Boolean).pop(),
@@ -203,15 +217,15 @@ export class ConfigManager {
         packagePath: rootPackagePath,
       } as unknown as ViteRunHandleFunctionOptions
       //@ts-ignore
-      viteConfigPart = await viteConfigPart.call(localConfig, options) // 当viteConfigPart是函数的时候执行获取配置，支持异步
+      viteConfigBlock = await viteConfigBlock.call(localConfig, options) // 当 viteConfigBlock 是函数的时候执行获取配置，支持异步
     }
-    return viteConfigPart as Record<any, any>
+    return viteConfigBlock as Record<any, any>
   }
 
 
   private async patchToTargets(absolutePath, patchConfigList) {
     const baseConfig = this.viteRunConfig.baseConfig || {}
-    const realBaseConfig = await this.getRealConfig(absolutePath, <object>baseConfig)  // baseConfig是函数或对象，传入函数会执行获取返回配置对象
+    const realBaseConfig = await this.getRealConfigBlock(absolutePath, <object>baseConfig)  // baseConfig是函数或对象，传入函数会执行获取返回配置对象
     realBaseConfig.root = resolve(process.cwd(), absolutePath)     // 子包的根目录重定向执行到配置root上
     for (const configInfo of patchConfigList) {
       const {type, config: customDefinePart} = configInfo

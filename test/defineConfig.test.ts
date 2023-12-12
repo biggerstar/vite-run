@@ -8,7 +8,7 @@ function getBaseConfig() {
 
 
 defineViteRunConfig({
-  baseConfig:getBaseConfig,
+  baseConfig: getBaseConfig,
   packages: [
     'packages/*',
     'examples/base/*',
@@ -19,9 +19,9 @@ defineViteRunConfig({
     'vite-run': {
       build: [
         ['es', 'types'],
-        'umd'
+        ['umd']
       ],
-      types: ['types'],
+      types: [['types']],
     },
   },
   plugins: {
@@ -57,20 +57,28 @@ defineViteRunConfig({
           }
         }
       }
+    },
+    umd1: () => {
+      return {
+        lib: {
+          formats: ['es', 'iife']
+        },
+        rollupOptions: {
+          output: {
+            format: "umd"
+          }
+        }
+      }
     }
   }
 })
 
-defineViteRunConfig(()=>{
+defineViteRunConfig(() => {
   return {
-    packages:{
-
-    },
-    build:{
-      test:{
-        rollupOptions:{
-
-        }
+    packages: {},
+    build: {
+      test: {
+        rollupOptions: {}
       }
     }
   }
