@@ -3,7 +3,7 @@ import {defineViteRunConfig, viteRunLogPlugin} from "vite-run";
 import createCopyDts from "vite-plugin-copy-dts";
 import dts from "vite-plugin-dts";
 
-
+console.log(111111111111111111)
 export default defineViteRunConfig({
   baseConfig: getBaseConfig,
   packages: [

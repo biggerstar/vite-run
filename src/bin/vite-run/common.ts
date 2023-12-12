@@ -10,7 +10,7 @@ export const targetConfigName = 'viterun.config'
 export const targetTemplateConfigName = 'default-viterun.config.ts'
 export const targetTemplateDocsConfigName = 'docs-viterun.config.ts'
 
-export const configSuffixList = ['ts', 'tsx','mts', 'cts', 'js', 'mjs', 'cjs']
+export const configSuffixList = ['ts', 'tsx', 'mts', 'cts', 'js', 'mjs', 'cjs']
 export const selfConfigFields = ['packages', 'baseConfig', 'targets']
 
 /** 检查数组中重复的值并返回重复值的列表 */
@@ -53,6 +53,7 @@ export function printIssueLog(log: string, isExit = false) {
 
 let localConfig: Partial<ViteRunOptions>
 
+/** 读取本地 vite-run.config 配置 */
 export async function readLocalViteRunConfig(): Promise<Partial<ViteRunOptions>> {
   if (localConfig) return localConfig   // 如果已经读过了，直接返回不会重新读取
   const {config} = await loadConfig({
@@ -67,8 +68,7 @@ export async function readLocalViteRunConfig(): Promise<Partial<ViteRunOptions>>
   if (!config) {
     throw new Error(colors.red(`The ${targetConfigName} configuration file cannot be found`))
   }
-
-  return (config || {}) as Partial<ViteRunOptions<{}>>
+  return localConfig = (config || {}) as Partial<ViteRunOptions<{}>>
 }
 
 export async function sleep(time: number = 0) {
