@@ -12,6 +12,7 @@ import {mergeConfig} from "vite";
 import {basename, resolve} from "node:path";
 import process from "node:process";
 import {patchToViteEngine} from "@/bin/vite-run/patch";
+import prompts from "@/bin/vite-run/inquirer";
 
 export class ConfigManager {
   /** 完整的外部config */
@@ -225,10 +226,41 @@ export class ConfigManager {
 
   /** 脚本派发入口函数，该类所有函数都只由该入口函数触发 */
   public async patch(scriptType: string, apps: [] = []) {
-    const allowTargets = await this.createConfigMap(scriptType, apps)
+    let allowTargets = await this.createConfigMap(scriptType, apps)
+    if (!apps.length) allowTargets = await this.inquirer(scriptType, allowTargets)
     for (const absolutePath in allowTargets) {
       const packageUseConfigList = allowTargets[absolutePath]  // 获取某个子包当前scriptType下要执行的配置列表
       await this.patchToTargets(absolutePath, packageUseConfigList)
     }
+  }
+
+  /**
+   * 如果没有在命令行中指定运行的应用， 且 参数2为 dev | build | preview 的特殊运行字段，如果有使用这几个字段将能支持调起控制台交互
+   * */
+  private async inquirer(scriptType: string, allowTargets: object) {
+    allowTargets = Object.assign({}, allowTargets)
+    const allowAppList = Object.values(allowTargets).map(targetList => targetList[0].appName)
+    let widgetsList = []
+
+    async function call(fn: Function) {
+      const {widgets, allow} = await fn.call(null, allowAppList)
+      if (allow === 'select') widgetsList = widgets
+      else if (allow === 'all') widgetsList = allowAppList
+      else if (allow === 'cancel') {
+        console.log(colors.red(`\u274C `), ' 您取消了操作')
+        process.exit(-1)
+      }
+      console.log(colors.gray(`➜ 当前微模块 ${widgetsList}`))
+    }
+
+    if (scriptType === 'dev') await call(prompts.dev)
+    else if (scriptType === 'build') await call(prompts.build)
+    else if (scriptType === 'preview') await call(prompts.preview)
+    for (const k in allowTargets) {
+      const targetList = allowTargets[k]
+      if (!widgetsList.includes(targetList[0].appName)) delete allowTargets[k]
+    }
+    // console.log(widgetsList, allowTargets)
+    return allowTargets
   }
 }

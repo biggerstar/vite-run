@@ -41,19 +41,21 @@
   },
   "description": "Vite multi-configuration monorepo mode operation support (Vite monorepo模式多配置运行支持)",
   "dependencies": {
+    "@types/inquirer": "^9.0.7",
     "commander": "^11.0.0",
     "glob": "^10.3.3",
+    "inquirer": "^9.2.12",
     "picocolors": "^1.0.0",
     "unconfig": "^0.3.9"
   },
   "devDependencies": {
     "@types/node": "^20.3.3",
     "rimraf": "^5.0.1",
+    "rollup-plugin-copy": "^3.4.0",
     "typescript": "^5.1.6",
     "vite": "^4.4.7",
     "vite-plugin-copy-dts": "0.0.5",
-    "vite-plugin-dts": "^3.2.0",
-    "rollup-plugin-copy": "^3.4.0"
+    "vite-plugin-dts": "^3.2.0"
   },
   "keywords": [
     "vite",

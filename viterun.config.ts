@@ -12,16 +12,16 @@ export default defineViteRunConfig({
     // './'
   ],
   targets: {
-    // 'vite-run': {   // 支持操作主包
+    // 'vite-run': {   // 支持操作主包,名称为根目录文件夹名称
     //   dev: ['watch']
     // },
     'lib1': {
       build: [
         // ['es'],
-        ['build_lib', 'production', 'umd', 'minify']
+        ['build_lib', 'umd', 'minify']
       ],
       types: ['types'],
-      dev: ['watch']
+      dev: ['watch'],
     },
     'lib2': {
       build: [
@@ -72,7 +72,7 @@ export default defineViteRunConfig({
     build_lib: (options) => {
       return {
         lib: {
-          entry: resolve(options.packagePath, 'main.ts'),
+          entry: resolve(options.packagePath, 'src', 'index.ts'),
           formats: ['umd'],
           name: options.name,
           fileName: (format) => `index.${format}.js`,

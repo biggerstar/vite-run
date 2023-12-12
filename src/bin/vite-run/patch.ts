@@ -4,6 +4,8 @@ import colors from "picocolors";
 import {supportViteMethod} from "@/plugins/resetOutputLog/types";
 
 export async function patchToViteEngine(type: supportViteMethod, viteConfig: any) {
+  // console.log(type)
+
   async function runPreview() {
     const previewServer = await preview(viteConfig)
     printSpaceLine()

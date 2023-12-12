@@ -43,6 +43,7 @@ export default defineConfig({
         'node:fs',
         'node:url',
         'commander',
+        'inquirer',
         'glob',
         'vite',
         'picocolors',

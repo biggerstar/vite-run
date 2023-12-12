@@ -26,6 +26,7 @@ const templateMapping = {
   docs: targetTemplateDocsConfigName
 }
 
+/** 创建 viterun.config 配置模板 */
 function copyViteRunConfig(argMap) {
   // console.log(argMap);
   if (argMap.init) {
@@ -39,7 +40,7 @@ function copyViteRunConfig(argMap) {
     if (argMap.p) templateName = 'p'
     const configPath = resolve(filePath, `../../${templateMapping[templateName]}`)
     let toPath = resolve(cwd(), `./${configFileName}`)
-    if(argMap['shadow']) toPath = toPath + '.ts'   // 如果是调试情况下，为输出文件多加上一个后缀防止覆盖先工程的文件
+    if (argMap['shadow']) toPath = toPath + '.ts'   // 如果是调试情况下，为输出文件多加上一个后缀防止覆盖先工程的文件
     if (!existsSync(toPath)) copyFileSync(configPath, toPath) // 如果文件不存在则复制
     else {
       if (argMap.f) copyFileSync(configPath, toPath)
@@ -65,9 +66,9 @@ function copyViteRunConfig(argMap) {
     .action(async (argMap: any, options: any) => {
       const args = options.args || []
       if (args.length < 1 && Object.keys(argMap).length === 0) return program.help()
+      if (Object.keys(argMap)) copyViteRunConfig(argMap)
       //-----------------------------------------------------
       if (args.length) await execViteTarget(args)
-      if (Object.keys(argMap)) copyViteRunConfig(argMap)
     })
 
   program.parse();
