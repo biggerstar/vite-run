@@ -4,8 +4,10 @@ import colors from "picocolors";
 import {supportViteMethod} from "@/plugins/resetOutputLog/types";
 
 export async function patchToViteEngine(type: supportViteMethod, viteConfig: any) {
-  async function runBuild() {
-    await build(viteConfig)
+  async function runPreview() {
+    const previewServer = await preview(viteConfig)
+    printSpaceLine()
+    previewServer.printUrls()
   }
 
   async function runServe() {
@@ -15,15 +17,13 @@ export async function patchToViteEngine(type: supportViteMethod, viteConfig: any
     server.printUrls()
   }
 
-  async function runPreview() {
-    const previewServer = await preview(viteConfig)
-    printSpaceLine()
-    previewServer.printUrls()
+  async function runBuild() {
+    await build(viteConfig)
   }
 
   switch (type) {
-    case 'build': {
-      await runBuild()
+    case 'preview': {
+      await runPreview()
     }
       break
     case 'server': {
@@ -31,8 +31,8 @@ export async function patchToViteEngine(type: supportViteMethod, viteConfig: any
       await runServe()
     }
       break
-    case 'preview': {
-      await runPreview()
+    case 'build': {
+      await runBuild()
     }
       break
     default : {

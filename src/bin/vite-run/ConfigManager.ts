@@ -173,10 +173,10 @@ export class ConfigManager {
         }
         const customDefinePart = this.mergeConfigs.apply(<object>this, groupConfigList)
         // console.log(customDefinePart);
-        let type = 'build'   // 如果应用多个配置可能会同时存在不同操作，优先级 build > server > preview
-        if (customDefinePart.build) type = 'build'
+        let type = 'build'   // 如果应用多个配置可能会同时存在不同操作，优先级 build < server < preview
+        if (customDefinePart.preview) type = 'preview'
         else if (customDefinePart.server) type = 'server'
-        else if (customDefinePart.preview) type = 'preview'
+        else if (customDefinePart.build) type = 'build'
         allowTargetMap[appAbsolutePath].push({
           appName,
           group,
