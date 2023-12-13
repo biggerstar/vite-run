@@ -5,7 +5,7 @@ import {
   readLocalViteRunConfig,
   selfConfigFields
 } from "@/bin/vite-run/common";
-import {configItemType, ViteRunHandleFunctionOptions, ViteRunOptions} from "@/types";
+import {configItemType, TargetMapInfo, ViteRunHandleFunctionOptions, ViteRunOptions} from "@/types";
 import colors from "picocolors";
 import {globSync} from "glob";
 import {mergeConfig} from "vite";
@@ -137,33 +137,45 @@ export class ConfigManager {
    * @param {string} scriptType 命令行执行执行的规则名称，比如 targets: {app: {build:['es','umd']}} ,外部运行viterun build，此时的scriptType就是build
    * @param {string[]} allowApps 指定执行的app名称列表，如果没有指定，则表示默认是全部在target中定义的app
    *  */
-  private async createConfigMap(scriptType: string, allowApps: string[] = []) {
+  private async createConfigMap(scriptType: string, allowApps: string[] = []): Promise<TargetMapInfo> {
     const allApp = await this.getAllLocalPackage()
     const allAppName = allApp.map(absolutePath => basename(absolutePath))
     const localConfig = this.getFullConfig()
     const targets = isFunction(localConfig.targets) ? localConfig.targets.call(localConfig) : localConfig.targets  // 获取targets配置，如果是函数则获取真实配置对象
+    // console.log(targets)
     let allowTargetMap: Record<any, any> = {}
     if (allowApps.length === 0) allowApps = Object.keys(targets).filter((appName: string) => {
       // 如果当前没有明确指定某几个app，则默认执行所有当前已经存在targets定义的app
-      return targets[appName][scriptType]
+      return targets[appName][scriptType] || targets[appName][`@${scriptType}`]
     })
     if (allowApps.length === 0) {
       printErrorLog(`The '${scriptType}' configuration name was not found in targets`, true)
     }
     for (let index in allowApps) {
+      /*-----------------------必要条件判定开始-------------------------*/
       const appName = allowApps[index] // 外部用户targets中设定的相对主项目地址的能指向子包的字段路径
-      const appAbsolutePath = <string>allApp.find(path => basename(path) === appName)
-      const target /* 某个app的target配置对象 */ = targets[appName]
       if (!allAppName.includes(appName)) {
         console.log(colors.red(`'${appName}' Does not exist in the file system`))
         process.exit(-1)
       }
+      const target /* 某个app的target配置对象 */ = targets[appName]
       if (!target) continue
-      let execConfigs: [] = target[scriptType]
+      /*-----------------------合成配置开始----------------------------*/
+      const appAbsolutePath = <string>allApp.find(path => basename(path) === appName)
+      let isRequire = false
+      let execConfigs: []
+      if (target[scriptType]) execConfigs = target[scriptType]
+      else if (target[`@${scriptType}`]) {   // 添加了@前缀则认为该指令下是必然运行的app (只会在 vite-run XXX 无明确定义运行app下生效)
+        execConfigs = target[`@${scriptType}`]
+        isRequire = true
+      }
       if (execConfigs && !Array.isArray(execConfigs)) {
         printErrorLog(`targets '${appName}.${scriptType}' It should be an array`, true)
       }
-      allowTargetMap[appAbsolutePath] = []
+      allowTargetMap[appAbsolutePath] = {
+        require: isRequire,
+        apps: []
+      }
       for (let group: string | string[] of execConfigs) {
         if (!Array.isArray(group)) group = [group]
         let groupConfigList = []
@@ -188,7 +200,7 @@ export class ConfigManager {
         if (customDefinePart.preview) type = 'preview'
         else if (customDefinePart.server) type = 'server'
         else if (customDefinePart.build) type = 'build'
-        allowTargetMap[appAbsolutePath].push({
+        allowTargetMap[appAbsolutePath].apps.push({
           appName,
           group,
           type: type,
@@ -243,7 +255,7 @@ export class ConfigManager {
     let allowTargets = await this.createConfigMap(scriptType, apps)
     if (!apps.length) allowTargets = await this.inquirer(scriptType, allowTargets)
     for (const absolutePath in allowTargets) {
-      const packageUseConfigList = allowTargets[absolutePath]  // 获取某个子包当前scriptType下要执行的配置列表
+      const {apps: packageUseConfigList} = allowTargets[absolutePath]  // 获取某个子包当前scriptType下要执行的配置列表
       await this.patchToTargets(absolutePath, packageUseConfigList)
     }
   }
@@ -251,15 +263,17 @@ export class ConfigManager {
   /**
    * 如果没有在命令行中指定运行的应用， 且 参数2为 dev | build | preview 的特殊运行字段，如果有使用这几个字段将能支持调起控制台交互
    * */
-  private async inquirer(scriptType: string, allowTargets: object) {
+  private async inquirer(scriptType: string, allowTargets: TargetMapInfo) {
     allowTargets = Object.assign({}, allowTargets)
-    const allowAppList = Object.values(allowTargets).map(targetList => targetList[0].appName)
+    const handleAppList/* 手动选择运行的app */ = Object.values(allowTargets).filter(item => !item.require).map(item => item.apps[0].appName)
+    const requireAppList/* 必然运行的app */ = Object.values(allowTargets).filter(item => item.require).map(item => item.apps[0].appName)
+    const allAppList = handleAppList.concat(requireAppList)
     let widgetsList = []
 
     async function call(fn: Function) {
-      const {widgets, allow} = await fn.call(null, allowAppList)
+      const {widgets, allow} = await fn.call(null, allAppList, requireAppList)
       if (allow === 'select') widgetsList = widgets
-      else if (allow === 'all') widgetsList = allowAppList
+      else if (allow === 'all') widgetsList = allAppList
       else if (allow === 'cancel') {
         console.log(colors.red(`\u274C `), ' 您取消了操作')
         process.exit(-1)
@@ -272,7 +286,7 @@ export class ConfigManager {
     else if (scriptType === 'preview') await call(prompts.preview)
     for (const k in allowTargets) {
       const targetList = allowTargets[k]
-      if (!widgetsList.includes(targetList[0].appName)) delete allowTargets[k]
+      if (!widgetsList.includes(targetList.apps[0].appName)) delete allowTargets[k]
     }
     // console.log(widgetsList, allowTargets)
     return allowTargets

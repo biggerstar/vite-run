@@ -114,3 +114,4 @@ export type configItemType = {
   value: any
 }
 
+export type TargetMapInfo = Record<string, { require: boolean, apps: Array<{ appName: string, group: any[], type: 'server |dev | build | preview', config: object }> }>

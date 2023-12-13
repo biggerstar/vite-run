@@ -3,7 +3,6 @@ import {defineViteRunConfig, viteRunLogPlugin} from "./src";
 import createCopyDts from "vite-plugin-copy-dts";
 import dts from "vite-plugin-dts";
 
-console.log(111111111111111111)
 export default defineViteRunConfig({
   baseConfig: getBaseConfig,
   packages: [
@@ -18,15 +17,15 @@ export default defineViteRunConfig({
       //   dev: ['watch']
       // },
       'lib1': {
-        build: [
+        'build': [
           // ['es'],
           ['build_lib', 'umd', 'minify']
         ],
         types: ['types'],
-        dev: ['watch'],
+        '@dev': ['watch'],
       },
       'lib2': {
-        build: [
+        '@build': [
           'es',
           ['umd', 'minify']
         ],
@@ -38,14 +37,15 @@ export default defineViteRunConfig({
           ['es', 'production'],
           ['umd', 'minify']
         ],
-        dev: ['10000']
+        dev: ['s10000'],
+        preview: ['p20000']
       },
       'web2': {
         build: [
           'es',
           ['umd', 'minify']
         ],
-        dev: ['11000']
+        dev: ['s11000']
       },
     }
   },
@@ -80,9 +80,7 @@ export default defineViteRunConfig({
           name: options.name,
           fileName: (format) => `index.${format}.js`,
         },
-        watch: {},
         rollupOptions: {
-          watch: {},
           external: [
             'vite',
             'vue',
@@ -100,19 +98,19 @@ export default defineViteRunConfig({
 
   },
   server: {
-    10000: {
+    s10000: {
       // open: true,
       port: 10000
     },
-    11000: {
+    s11000: {
       port: 11000
     },
-    12000: {
+    s12000: {
       port: 12000
     },
   },
   preview: {
-    20000: {
+    p20000: {
       port: 20000,
     }
   },
