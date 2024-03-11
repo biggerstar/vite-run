@@ -1,7 +1,7 @@
 import inquirer from "inquirer";
 
 const prompts = {
-  async dev(allowAppList, requireAppList) {
+  async dev(allowAppList: string[], requireAppList: string[]) {
     return inquirer['prompt'](
       [
         {
@@ -16,7 +16,7 @@ const prompts = {
         },
         {
           type: "checkbox",
-          message: () => `请选择要运行的微模块名称[ 默认已选择 ${requireAppList} ]:`,
+          message: () => `请选择要运行的微模块名称[ 默认已选 ${requireAppList} ]:`,
           name: "widgets",
           when: (res) => res['allow'] === 'select',
           choices: allowAppList,
@@ -25,7 +25,7 @@ const prompts = {
       ]
     )
   },
-  async build(allowAppList, requireAppList) {
+  async build(allowAppList: string[], requireAppList: string[]) {
     return inquirer['prompt'](
       [
         {
@@ -40,7 +40,7 @@ const prompts = {
         },
         {
           type: "checkbox",
-          message: () => `请选择要运行的微模块名称[ 默认已选择 ${requireAppList} ]:`,
+          message: () => `请选择要运行的微模块名称[ 默认已选 ${requireAppList} ]:`,
           name: "widgets",
           when: (res) => res['allow'] === 'select',
           choices: allowAppList,
@@ -48,7 +48,7 @@ const prompts = {
         },
       ])
   },
-  async preview(allowAppList, requireAppList) {
+  async preview(allowAppList: string[], requireAppList: string[]) {
     return inquirer['prompt'](
       [
         {
@@ -63,7 +63,7 @@ const prompts = {
         },
         {
           type: "checkbox",
-          message: () => `请选择要运行的微模块名称[ 默认已选择 ${requireAppList} ]:`,
+          message: () => `请选择要运行的微模块名称[ 默认已选 ${requireAppList} ]:`,
           name: "widgets",
           when: (res) => res['allow'] === 'select',
           choices: allowAppList,

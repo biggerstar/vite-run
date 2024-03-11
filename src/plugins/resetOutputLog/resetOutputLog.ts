@@ -34,7 +34,7 @@ export function viteRunLogPlugin(options?: OutputLogOptions): Plugin {
       LogConfig = getViteRunTypeLogConfig(viteRunType, <OutputLogOptions>options)
       const interceptorController = createInterceptorLog(LogConfig)
       matchRules.forEach(rule => interceptorController.addRule(rule))
-      interceptStdoutWriteLog((log) => interceptorController.isInterceptor(log))
+      interceptStdoutWriteLog((log:string) => interceptorController.isInterceptor(log))
     },
     buildStart(arg: any) {
       if (controller.isBlock()) return

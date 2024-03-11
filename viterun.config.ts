@@ -1,8 +1,7 @@
 import {resolve} from "node:path";
-import {defineViteRunConfig, viteRunLogPlugin} from "./src";
+import {BaseConfigReturnType, defineViteRunConfig, ViteRunHandleFunctionOptions, viteRunLogPlugin} from "./src";
 import createCopyDts from "vite-plugin-copy-dts";
 import dts from "vite-plugin-dts";
-
 export default defineViteRunConfig({
   baseConfig: getBaseConfig,
   packages: [
@@ -78,7 +77,7 @@ export default defineViteRunConfig({
           entry: resolve(options.packagePath, 'src', 'index.ts'),
           formats: ['umd'],
           name: options.name,
-          fileName: (format) => `index.${format}.js`,
+          fileName: (format: string) => `index.${format}.js`,
         },
         rollupOptions: {
           external: [
@@ -136,7 +135,7 @@ export default defineViteRunConfig({
         {
           name: 'block-js-file-output',
           apply: 'build',
-          generateBundle(_, bundle) {
+          generateBundle(_: any, bundle: any) {
             for (const k in bundle) {
               delete bundle[k]   // 禁止该js后面产物的输出文件，目的为了只输出dts
             }
@@ -147,8 +146,7 @@ export default defineViteRunConfig({
   }
 })
 
-
-function getBaseConfig(options) {
+function getBaseConfig(options: ViteRunHandleFunctionOptions): BaseConfigReturnType {
   // console.log(this);
   // console.log('viterun:', options)
   const entryPath = options.packagePath.includes('examples/')
@@ -169,7 +167,7 @@ function getBaseConfig(options) {
       lib: {
         entry: entryPath,
         name: options.name,
-        fileName: (format) => `${options.name}.${format}.js`,
+        fileName: (format: any) => `${options.name}.${format}.js`,
       },
       rollupOptions: {
         external: [

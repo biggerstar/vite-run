@@ -10,12 +10,13 @@ import {resolve} from "node:path";
 import {copyFileSync, existsSync} from "node:fs";
 
 
-const templateMapping = {
+const templateMapping: Record<string, any> = {
   p: targetTemplateConfigName,
   docs: targetTemplateDocsConfigName
 }
+
 /** 创建 viterun.config 配置模板 */
-export function copyViteRunConfig(argMap) {
+export function copyViteRunConfig(argMap: Record<string, any>) {
   // console.log(argMap);
   if (argMap.init) {
     const __filename = import.meta.url

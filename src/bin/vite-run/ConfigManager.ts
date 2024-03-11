@@ -5,7 +5,7 @@ import {
   readLocalViteRunConfig,
   selfConfigFields
 } from "@/bin/vite-run/common";
-import {configItemType, TargetMapInfo, ViteRunHandleFunctionOptions, ViteRunOptions} from "@/types";
+import {BaseConfigType, configItemType, TargetMapInfo, ViteRunHandleFunctionOptions, ViteRunOptions} from "@/types";
 import colors from "picocolors";
 import {globSync} from "glob";
 import {mergeConfig} from "vite";
@@ -101,7 +101,7 @@ export class ConfigManager {
     const localConfig = await readLocalViteRunConfig()
     const packages = isFunction(localConfig.packages) ? localConfig.packages.call(localConfig) : localConfig.packages  // 获取 packages 配置，如果是函数则获取真实配置对象
     let allApp: string[] = []
-    packages.forEach(packagePart => {
+    packages.forEach((packagePart: string) => {
       if (packagePart.includes('*')) {  // 带有*号合法性检测， 防止比如 xx/**/** 全遍历某文件夹下所有文件
         const parts = packagePart.split('/')
         parts.pop()   // 只允许尾部带 * 号，先pop出再检测前面是否还带*号，如果带的话为不合法匹配
@@ -163,7 +163,7 @@ export class ConfigManager {
       /*-----------------------合成配置开始----------------------------*/
       const appAbsolutePath = <string>allApp.find(path => basename(path) === appName)
       let isRequire = false
-      let execConfigs: []
+      let execConfigs: any
       if (target[scriptType]) execConfigs = target[scriptType]
       else if (target[`@${scriptType}`]) {   // 添加了@前缀则认为该指令下是必然运行的app (只会在 vite-run XXX 无明确定义运行app下生效)
         execConfigs = target[`@${scriptType}`]
@@ -176,7 +176,7 @@ export class ConfigManager {
         require: isRequire,
         apps: []
       }
-      for (let group: string | string[] of execConfigs) {
+      for (let group of execConfigs) {
         if (!Array.isArray(group)) group = [group]
         let groupConfigList = []
         for (const configName of group) {
@@ -217,7 +217,9 @@ export class ConfigManager {
    * 情况1：传入对象的话原样返回，
    * 情况2：传入函数执行后获取返回对象
    * */
-  private async getRealConfigBlock(packagePath: string, viteConfigBlock: Record<any, any> | Function, setup: { type?: string } = {}) {
+  private async getRealConfigBlock(packagePath: string, viteConfigBlock: Record<any, any> | Function, setup: {
+    type?: string
+  } = {}) {
     const rootPackagePath = resolve(process.cwd(), packagePath)  // 子包的根目录
     const localConfig = this.getFullConfig()
     let options = {}
@@ -235,9 +237,9 @@ export class ConfigManager {
   }
 
 
-  private async patchToTargets(absolutePath, patchConfigList) {
-    const baseConfig = this.viteRunConfig.baseConfig || {}
-    const realBaseConfig = await this.getRealConfigBlock(absolutePath, <object>baseConfig)  // baseConfig是函数或对象，传入函数会执行获取返回配置对象
+  private async patchToTargets(absolutePath: string, patchConfigList: any[]) {
+    const baseConfig = this.viteRunConfig.baseConfig
+    const realBaseConfig = await this.getRealConfigBlock(absolutePath, <object>baseConfig || {})  // baseConfig是函数或对象，传入函数会执行获取返回配置对象
     realBaseConfig.root = resolve(process.cwd(), absolutePath)     // 子包的根目录重定向执行到配置root上
     for (const configInfo of patchConfigList) {
       const {type, config: customDefinePart} = configInfo
@@ -250,8 +252,8 @@ export class ConfigManager {
     }
   }
 
-  /** 脚本派发入口函数，该类所有函数都只由该入口函数触发 */
-  public async patch(scriptType: string, apps: [] = []) {
+  /** 脚本执行入口函数，该类所有函数都只由该入口函数触发 */
+  public async patch(scriptType: string, apps: string[] = []) {
     let allowTargets = await this.createConfigMap(scriptType, apps)
     if (!apps.length) allowTargets = await this.inquirer(scriptType, allowTargets)
     for (const absolutePath in allowTargets) {
@@ -268,7 +270,7 @@ export class ConfigManager {
     const handleAppList/* 手动选择运行的app */ = Object.values(allowTargets).filter(item => !item.require).map(item => item.apps[0].appName)
     const requireAppList/* 必然运行的app */ = Object.values(allowTargets).filter(item => item.require).map(item => item.apps[0].appName)
     const allAppList = handleAppList.concat(requireAppList)
-    let widgetsList = []
+    let widgetsList: any[] = []
 
     async function call(fn: Function) {
       const {widgets, allow} = await fn.call(null, allAppList, requireAppList)
@@ -278,7 +280,7 @@ export class ConfigManager {
         console.log(colors.red(`\u274C `), ' 您取消了操作')
         process.exit(-1)
       }
-      console.log(colors.gray(`➜ 当前微模块 ${widgetsList}`))
+      console.log(colors.gray(`➜ 当前使用微模块 ${widgetsList}`))
     }
 
     if (scriptType === 'dev') await call(prompts.dev)

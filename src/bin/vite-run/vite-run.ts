@@ -6,10 +6,10 @@ import {copyViteRunConfig} from "@/bin/vite-run/createTemplate";
 
 let configManager: ConfigManager
 
-async function execViteTarget(args) {
+async function execViteTarget(args: string[]) {
   const scriptType = args.shift()   // 运行target某个规则类型先拿出来，后面剩下的都会是包名
   // args 如果数组不等于0个，说明针对指定一个或多个包执行 scriptType定义的配置
-  await configManager.patch(scriptType, args)
+ if (scriptType) await configManager.patch(scriptType, args)
 }
 
 

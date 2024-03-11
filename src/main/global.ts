@@ -21,4 +21,3 @@ export function defineViteRunConfig<OptionsData extends ViteRunOptions<OptionsDa
   if (typeof options === 'function') return options()
   return options
 }
-

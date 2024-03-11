@@ -1,6 +1,6 @@
 {
   "name": "vite-run",
-  "version": "1.5.2",
+  "version": "1.5.16",
   "type": "module",
   "bin": {
     "vite-run": "./dist/bin/vite-run.js"
@@ -42,20 +42,20 @@
   "description": "Vite multi-configuration monorepo mode operation support (Vite monorepo模式多配置运行支持)",
   "dependencies": {
     "@types/inquirer": "^9.0.7",
-    "commander": "^11.0.0",
-    "glob": "^10.3.3",
-    "inquirer": "^9.2.12",
+    "commander": "^11.1.0",
+    "glob": "^10.3.10",
+    "inquirer": "^9.2.15",
     "picocolors": "^1.0.0",
-    "unconfig": "^0.3.9"
+    "unconfig": "^0.3.11"
   },
   "devDependencies": {
-    "@types/node": "^20.3.3",
-    "rimraf": "^5.0.1",
-    "rollup-plugin-copy": "^3.4.0",
-    "typescript": "^5.1.6",
-    "vite": "^4.4.7",
+    "@types/node": "^20.11.25",
+    "rimraf": "^5.0.5",
+    "rollup-plugin-copy": "^3.5.0",
+    "typescript": "^5.4.2",
+    "vite": "5.1.5",
     "vite-plugin-copy-dts": "0.0.5",
-    "vite-plugin-dts": "^3.2.0"
+    "vite-plugin-dts": "^3.7.3"
   },
   "keywords": [
     "vite",
