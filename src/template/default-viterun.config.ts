@@ -1,5 +1,5 @@
 import {resolve} from "node:path";
-import {defineViteRunConfig, viteRunLogPlugin} from "vite-run";
+import {defineViteRunConfig, ViteRunHandleFunctionOptions, viteRunLogPlugin} from "vite-run";
 
 export default defineViteRunConfig({
   baseConfig: getBaseConfig,
@@ -14,15 +14,21 @@ export default defineViteRunConfig({
         ['es'],
         ['plugin1', 'umd']
       ],
-      types: ['types'],
-      dev: ['watch']
+      types: [
+        ['types'],
+      ],
+      dev: [
+        ['watch']
+      ]
     },
     'you-app-name-1': {
       build: [
         ['es'],
         ['umd', 'minify']
       ],
-      dev: ['10000']
+      dev: [
+        ['10000']
+      ]
     },
   },
   build: {
@@ -42,13 +48,13 @@ export default defineViteRunConfig({
     minify: {
       minify: true
     },
-    build_lib: (options) => {
+    build_lib: (options: ViteRunHandleFunctionOptions) => {
       return {
         lib: {
           entry: resolve(options.packagePath, 'main.ts'),
           formats: ['umd'],
           name: options.name,
-          fileName: (format) => `index.${format}.js`,
+          fileName: (format: string) => `index.${format}.js`,
         },
         watch: {},
         rollupOptions: {
@@ -71,12 +77,12 @@ export default defineViteRunConfig({
     }
   },
   plugins: {
-    plugin1: (_) => {
+    plugin1: (_: ViteRunHandleFunctionOptions) => {
       return [
         {
           name: 'example-plugin1',
           apply: 'build',
-          resolveId(_) {
+          resolveId(_: string) {
           },
         },
       ]
@@ -84,14 +90,14 @@ export default defineViteRunConfig({
     plugin2: [
       {
         name: 'example-plugin2',
-        resolveId(_) {
+        resolveId(_: string) {
         },
       },
     ]
   }
 })
 
-function getBaseConfig(options) {
+function getBaseConfig(options: ViteRunHandleFunctionOptions) {
   return {
     resolve: {
       extensions: [".ts", ".js", '.css'],

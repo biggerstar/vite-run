@@ -24,7 +24,7 @@ export class ConfigManager {
   /** 检查数组中是否有重复项 */
   constructor() {
     this.config = {}
-    this.viteRunConfig = {}
+    this.viteRunConfig = {} as any
   }
 
   /** 获取某个配置的值 */
@@ -101,7 +101,7 @@ export class ConfigManager {
     const localConfig = await readLocalViteRunConfig()
     const packages = isFunction(localConfig.packages) ? localConfig.packages.call(localConfig) : localConfig.packages  // 获取 packages 配置，如果是函数则获取真实配置对象
     let allApp: string[] = []
-    packages.forEach(packagePart => {
+    packages.forEach((packagePart: string) => {
       if (packagePart.includes('*')) {  // 带有*号合法性检测， 防止比如 xx/**/** 全遍历某文件夹下所有文件
         const parts = packagePart.split('/')
         parts.pop()   // 只允许尾部带 * 号，先pop出再检测前面是否还带*号，如果带的话为不合法匹配
@@ -163,7 +163,7 @@ export class ConfigManager {
       /*-----------------------合成配置开始----------------------------*/
       const appAbsolutePath = <string>allApp.find(path => basename(path) === appName)
       let isRequire = false
-      let execConfigs: []
+      let execConfigs: any
       if (target[scriptType]) execConfigs = target[scriptType]
       else if (target[`@${scriptType}`]) {   // 添加了@前缀则认为该指令下是必然运行的app (只会在 vite-run XXX 无明确定义运行app下生效)
         execConfigs = target[`@${scriptType}`]
@@ -176,7 +176,7 @@ export class ConfigManager {
         require: isRequire,
         apps: []
       }
-      for (let group: string | string[] of execConfigs) {
+      for (let group of execConfigs) {
         if (!Array.isArray(group)) group = [group]
         let groupConfigList = []
         for (const configName of group) {
@@ -217,7 +217,9 @@ export class ConfigManager {
    * 情况1：传入对象的话原样返回，
    * 情况2：传入函数执行后获取返回对象
    * */
-  private async getRealConfigBlock(packagePath: string, viteConfigBlock: Record<any, any> | Function, setup: { type?: string } = {}) {
+  private async getRealConfigBlock(packagePath: string, viteConfigBlock: Record<any, any> | Function, setup: {
+    type?: string
+  } = {}) {
     const rootPackagePath = resolve(process.cwd(), packagePath)  // 子包的根目录
     const localConfig = this.getFullConfig()
     let options = {}
@@ -235,9 +237,9 @@ export class ConfigManager {
   }
 
 
-  private async patchToTargets(absolutePath, patchConfigList) {
-    const baseConfig = this.viteRunConfig.baseConfig || {}
-    const realBaseConfig = await this.getRealConfigBlock(absolutePath, <object>baseConfig)  // baseConfig是函数或对象，传入函数会执行获取返回配置对象
+  private async patchToTargets(absolutePath: string, patchConfigList: any[]) {
+    const baseConfig = this.viteRunConfig.baseConfig
+    const realBaseConfig = await this.getRealConfigBlock(absolutePath, <object>baseConfig || {})  // baseConfig是函数或对象，传入函数会执行获取返回配置对象
     realBaseConfig.root = resolve(process.cwd(), absolutePath)     // 子包的根目录重定向执行到配置root上
     for (const configInfo of patchConfigList) {
       const {type, config: customDefinePart} = configInfo
@@ -250,10 +252,10 @@ export class ConfigManager {
     }
   }
 
-  /** 脚本派发入口函数，该类所有函数都只由该入口函数触发 */
-  public async patch(scriptType: string, apps: [] = []) {
+  /** 脚本执行入口函数，该类所有函数都只由该入口函数触发 */
+  public async patch(scriptType: string, apps: string[] = [], optionValues: Record<string, any>) {
     let allowTargets = await this.createConfigMap(scriptType, apps)
-    if (!apps.length) allowTargets = await this.inquirer(scriptType, allowTargets)
+    if (!apps.length) allowTargets = await this.inquirer(scriptType, allowTargets, optionValues)
     for (const absolutePath in allowTargets) {
       const {apps: packageUseConfigList} = allowTargets[absolutePath]  // 获取某个子包当前scriptType下要执行的配置列表
       await this.patchToTargets(absolutePath, packageUseConfigList)
@@ -263,27 +265,37 @@ export class ConfigManager {
   /**
    * 如果没有在命令行中指定运行的应用， 且 参数2为 dev | build | preview 的特殊运行字段，如果有使用这几个字段将能支持调起控制台交互
    * */
-  private async inquirer(scriptType: string, allowTargets: TargetMapInfo) {
+  private async inquirer(scriptType: string, allowTargets: TargetMapInfo, optionValues: Record<string, any>) {
     allowTargets = Object.assign({}, allowTargets)
     const handleAppList/* 手动选择运行的app */ = Object.values(allowTargets).filter(item => !item.require).map(item => item.apps[0].appName)
     const requireAppList/* 必然运行的app */ = Object.values(allowTargets).filter(item => item.require).map(item => item.apps[0].appName)
     const allAppList = handleAppList.concat(requireAppList)
-    let widgetsList = []
+    let widgetsList: any[] = []
 
-    async function call(fn: Function) {
-      const {widgets, allow} = await fn.call(null, allAppList, requireAppList)
-      if (allow === 'select') widgetsList = widgets
-      else if (allow === 'all') widgetsList = allAppList
+    async function showPrompts(opt: { message: string }) {
+      const {widgets, allow} = await prompts.default({
+        allowAppList: allAppList,
+        requireAppList,
+        message: opt.message
+      })
+      if (allow === 'all') widgetsList = allAppList
+      else if (allow === 'select') widgetsList = widgets
       else if (allow === 'cancel') {
-        console.log(colors.red(`\u274C `), ' 您取消了操作')
+        console.log(colors.red(`\u274C `), ' You cancelled the operation')
         process.exit(-1)
       }
-      console.log(colors.gray(`➜ 当前微模块 ${widgetsList}`))
+      console.log(colors.gray(`➜ Currently using micro modules ${widgetsList}`))
     }
 
-    if (scriptType === 'dev') await call(prompts.dev)
-    else if (scriptType === 'build') await call(prompts.build)
-    else if (scriptType === 'preview') await call(prompts.preview)
+    if (optionValues.y) {
+      widgetsList = allAppList
+    } else {
+      if (scriptType === 'dev') await showPrompts({message: 'Please select the micro module you want to run.'})
+      else if (scriptType === 'build') await showPrompts({message: 'Are you sure you want to compile all micro modules.'})
+      else if (scriptType === 'preview') await showPrompts({message: 'Please select the micro module you want to preview.'})
+      else await showPrompts({message: `Please select the micro module where you run the command ${scriptType}`})
+    }
+
     for (const k in allowTargets) {
       const targetList = allowTargets[k]
       if (!widgetsList.includes(targetList.apps[0].appName)) delete allowTargets[k]
