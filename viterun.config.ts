@@ -2,6 +2,7 @@ import {resolve} from "node:path";
 import {BaseConfigReturnType, defineViteRunConfig, ViteRunHandleFunctionOptions, viteRunLogPlugin} from "./src";
 import createCopyDts from "vite-plugin-copy-dts";
 import dts from "vite-plugin-dts";
+
 export default defineViteRunConfig({
   baseConfig: getBaseConfig,
   packages: [
@@ -16,35 +17,48 @@ export default defineViteRunConfig({
       //   dev: ['watch']
       // },
       'lib1': {
-        'build': [
-          // ['es'],
+        build: [
           ['build_lib', 'umd', 'minify']
         ],
-        types: ['types'],
-        '@dev': ['watch'],
+        types: [
+          ['types']
+        ],
+        '@dev': [
+          ['watch']
+        ],
       },
       'lib2': {
         '@build': [
-          'es',
+          ['es'],
           ['umd', 'minify']
         ],
-        types: ['types'],
-        dev: ['watch']
+        types: [
+          ['types']
+        ],
+        dev: [
+          ['watch']
+        ]
       },
       'web1': {
         build: [
           ['es', 'production'],
           ['umd', 'minify']
         ],
-        dev: ['s10000'],
-        preview: ['p20000']
+        dev: [
+          ['s10000']
+        ],
+        preview: [
+          ['p20000']
+        ]
       },
       'web2': {
         build: [
-          'es',
+          ['es'],
           ['umd', 'minify']
         ],
-        dev: ['s11000']
+        dev: [
+          ['s11000']
+        ]
       },
     }
   },

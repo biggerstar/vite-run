@@ -15,7 +15,7 @@ export default defineViteRunConfig({
         ['plugin1', 'umd']
       ],
       types: [
-        ['types']
+        ['types'],
       ],
       dev: [
         ['watch']

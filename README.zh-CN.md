@@ -252,8 +252,7 @@ interceptStdoutWriteLog((log)=>{
       targets: {
         'lib-app':{
            dev: [
-             'watch'，
-             'es'
+             ['watch','es'],
            ]
         },
       }

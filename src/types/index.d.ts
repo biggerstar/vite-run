@@ -59,10 +59,10 @@ export type ViteRunSelfOptions<Options extends Record<any, any>> = {
    *  */
   baseConfig?: BaseConfigType
   /** 需要管理包的位置，支持部分glob语法(只允许获取文件夹和非**匹配) */
-  packages?: Array<string>;
+  packages: Array<string>;
   /** 定义要操作包的位置和适用该包的规则，这里说的规则指的是在configs中定义的配置，
    * 编译的时候按上下文从上到下定义的顺序编译(因为可能后面的包依赖之前的包) */
-  targets?: TargetsOptions | (() => TargetsOptions)
+  targets: TargetsOptions | (() => TargetsOptions)
 }
 
 /** plugins 字段的类型里面会无限嵌套，在DeepPartial类型检查的时候会出问题，单独拎出来处理 */

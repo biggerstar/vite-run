@@ -5,7 +5,7 @@ import {
   readLocalViteRunConfig,
   selfConfigFields
 } from "@/bin/vite-run/common";
-import {BaseConfigType, configItemType, TargetMapInfo, ViteRunHandleFunctionOptions, ViteRunOptions} from "@/types";
+import {configItemType, TargetMapInfo, ViteRunHandleFunctionOptions, ViteRunOptions} from "@/types";
 import colors from "picocolors";
 import {globSync} from "glob";
 import {mergeConfig} from "vite";
@@ -24,7 +24,7 @@ export class ConfigManager {
   /** 检查数组中是否有重复项 */
   constructor() {
     this.config = {}
-    this.viteRunConfig = {}
+    this.viteRunConfig = {} as any
   }
 
   /** 获取某个配置的值 */
@@ -253,9 +253,9 @@ export class ConfigManager {
   }
 
   /** 脚本执行入口函数，该类所有函数都只由该入口函数触发 */
-  public async patch(scriptType: string, apps: string[] = []) {
+  public async patch(scriptType: string, apps: string[] = [], optionValues: Record<string, any>) {
     let allowTargets = await this.createConfigMap(scriptType, apps)
-    if (!apps.length) allowTargets = await this.inquirer(scriptType, allowTargets)
+    if (!apps.length) allowTargets = await this.inquirer(scriptType, allowTargets, optionValues)
     for (const absolutePath in allowTargets) {
       const {apps: packageUseConfigList} = allowTargets[absolutePath]  // 获取某个子包当前scriptType下要执行的配置列表
       await this.patchToTargets(absolutePath, packageUseConfigList)
@@ -265,27 +265,37 @@ export class ConfigManager {
   /**
    * 如果没有在命令行中指定运行的应用， 且 参数2为 dev | build | preview 的特殊运行字段，如果有使用这几个字段将能支持调起控制台交互
    * */
-  private async inquirer(scriptType: string, allowTargets: TargetMapInfo) {
+  private async inquirer(scriptType: string, allowTargets: TargetMapInfo, optionValues: Record<string, any>) {
     allowTargets = Object.assign({}, allowTargets)
     const handleAppList/* 手动选择运行的app */ = Object.values(allowTargets).filter(item => !item.require).map(item => item.apps[0].appName)
     const requireAppList/* 必然运行的app */ = Object.values(allowTargets).filter(item => item.require).map(item => item.apps[0].appName)
     const allAppList = handleAppList.concat(requireAppList)
     let widgetsList: any[] = []
 
-    async function call(fn: Function) {
-      const {widgets, allow} = await fn.call(null, allAppList, requireAppList)
-      if (allow === 'select') widgetsList = widgets
-      else if (allow === 'all') widgetsList = allAppList
+    async function showPrompts(opt: { message: string }) {
+      const {widgets, allow} = await prompts.default({
+        allowAppList: allAppList,
+        requireAppList,
+        message: opt.message
+      })
+      if (allow === 'all') widgetsList = allAppList
+      else if (allow === 'select') widgetsList = widgets
       else if (allow === 'cancel') {
-        console.log(colors.red(`\u274C `), ' 您取消了操作')
+        console.log(colors.red(`\u274C `), ' You cancelled the operation')
         process.exit(-1)
       }
-      console.log(colors.gray(`➜ 当前使用微模块 ${widgetsList}`))
+      console.log(colors.gray(`➜ Currently using micro modules ${widgetsList}`))
     }
 
-    if (scriptType === 'dev') await call(prompts.dev)
-    else if (scriptType === 'build') await call(prompts.build)
-    else if (scriptType === 'preview') await call(prompts.preview)
+    if (optionValues.y) {
+      widgetsList = allAppList
+    } else {
+      if (scriptType === 'dev') await showPrompts({message: 'Please select the micro module you want to run.'})
+      else if (scriptType === 'build') await showPrompts({message: 'Are you sure you want to compile all micro modules.'})
+      else if (scriptType === 'preview') await showPrompts({message: 'Please select the micro module you want to preview.'})
+      else await showPrompts({message: `Please select the micro module where you run the command ${scriptType}`})
+    }
+
     for (const k in allowTargets) {
       const targetList = allowTargets[k]
       if (!widgetsList.includes(targetList.apps[0].appName)) delete allowTargets[k]
