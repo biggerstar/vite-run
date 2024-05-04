@@ -95,7 +95,7 @@ export default defineViteRunConfig({
         ['watch']
       ]
     },
-    'you-app-name1': {
+    'you-app-name2': {
       build: [
         ['es'],
         ['umd', 'minify']

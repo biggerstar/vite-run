@@ -19,27 +19,28 @@ async function execViteTarget(args: string[], optionValues: Record<string, any>)
 
   program
     .name('vite-run')
-    .option('--init', 'Initialize Configuration Template')
-    .option('-f', 'Force overwrite of local viterun.config file during initialization')
     .option('-y', 'Do not pop up the option to run the module, run all directly')
-    .option('-p', 'Generate the vite-run configuration without comments')
-    .option('--shadow', '')  // 生成影子文件，用于调试产出文件不会覆盖原有的viterun.config
     .description(colors.green('\u25B6  ' + 'Used to define multiple different vite packaging configurations for all subpackages and manage them uniformly' + ' \u25C0'))
     .version(packVersion)
-    /* @ts-ignore */
     .action(async (argMap: any, options: Record<any, any>) => {
-      await configManager.init()
       const args = options.args || []
       if (args.length === 0 && Object.keys(argMap).length === 0) {
         return program.help()
       }
-      if (Object.keys(argMap)) {
-        copyViteRunConfig(argMap)
-      }
       //-----------------------------------------------------
+      await configManager.init()
       if (args.length) {
         await execViteTarget(args, argMap)
       }
+    })
+
+  program.command('init')
+    .description('Initialize Configuration Template')
+    .option('--cover', '[--init] Force overwrite of local viterun.config file during initialization')
+    .option('--docs', '[--init] Generate the vite-run configuration without comments')
+    .option('--shadow', '')  // 生成影子文件，用于调试产出文件不会覆盖原有的viterun.config
+    .action(async (argMap: any, _: Record<any, any>) => {
+      copyViteRunConfig(argMap)
     })
 
   program.parse();
