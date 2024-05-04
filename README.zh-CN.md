@@ -23,12 +23,14 @@ vite 多配置执行支持, 配置共享，像搭积木一样自由组合配置�
 - yarn
 
 ```shell
+    yarn add vite -D
     yarn add vite-run -D
 ```
 
 - pnpm
 
 ```shell
+    pnpm add vite -D
     pnpm add vite-run -D
 ```
 

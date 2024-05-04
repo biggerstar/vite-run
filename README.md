@@ -23,12 +23,14 @@ This tool is developed in `pnpm` multi package mode
 - yarn
 
 ```shell
+    yarn add vite -D
     yarn add vite-run -D
 ```
 
 - pnpm
 
 ```shell
+    pnpm add vite -D
     pnpm add vite-run -D
 ```
 
