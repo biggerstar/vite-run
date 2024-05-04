@@ -1,5 +1,5 @@
 import {resolve} from "node:path";
-import {defineViteRunConfig, viteRunLogPlugin} from "vite-run";
+import {defineViteRunConfig, viteRunLogPlugin, ViteRunHandleFunctionOptions} from "vite-run";
 
 /*
 * This file is just a template, and running it directly will result in an error.
@@ -8,7 +8,6 @@ import {defineViteRunConfig, viteRunLogPlugin} from "vite-run";
 * If you are already using this tool and do not need any comments,
 * you can run   vite run -- init - p   to regenerate the vite run. config configuration without comments
 * */
-
 
 
 export default defineViteRunConfig({
@@ -49,7 +48,7 @@ export default defineViteRunConfig({
     */
 
     /* Here 'you-app-name' is the managed by vite-run app name, which must be the directory specified in packages   */
-    'you-app-name' : {
+    'you-app-name': {
       build: [
         /* The es configuration here will be combined with baseConfig for the final vite configuration
          * The es configuration here points to the object that is the build.es configuration below
@@ -89,15 +88,21 @@ export default defineViteRunConfig({
         */
         ['plugin1', 'umd']
       ],
-      types: ['types'],
-      dev: ['watch']
+      types: [
+        ['types']
+      ],
+      dev: [
+        ['watch']
+      ]
     },
     'you-app-name1': {
       build: [
         ['es'],
         ['umd', 'minify']
       ],
-      dev: ['10000']
+      dev: [
+        ['10000']
+      ]
     },
   },
 
@@ -148,7 +153,7 @@ export default defineViteRunConfig({
           entry: resolve(options.packagePath, 'main.ts'),
           formats: ['umd'],
           name: options.name,
-          fileName: (format) => `index.${format}.js`,
+          fileName: (format: string) => `index.${format}.js`,
         },
         watch: {},
         rollupOptions: {
@@ -191,7 +196,7 @@ export default defineViteRunConfig({
   }
 })
 
-function getBaseConfig(options) {
+function getBaseConfig(options: ViteRunHandleFunctionOptions) {
   return {
     resolve: {
       extensions: [".ts", ".js", '.css'],

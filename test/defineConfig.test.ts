@@ -75,7 +75,8 @@ defineViteRunConfig({
 
 defineViteRunConfig(() => {
   return {
-    packages: {},
+    packages: [],
+    targets:{},
     build: {
       test: {
         rollupOptions: {}

@@ -1,5 +1,5 @@
-import {resolve} from "node:path";
-import {defineViteRunConfig, ViteRunHandleFunctionOptions, viteRunLogPlugin} from "vite-run";
+import {resolve} from 'node:path';
+import {defineViteRunConfig, viteRunLogPlugin, ViteRunHandleFunctionOptions} from "vite-run";
 
 export default defineViteRunConfig({
   baseConfig: getBaseConfig,
