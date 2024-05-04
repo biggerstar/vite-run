@@ -14,8 +14,9 @@ const templateMapping = {
   p: targetTemplateConfigName,
   docs: targetTemplateDocsConfigName
 }
+
 /** 创建 viterun.config 配置模板 */
-export function copyViteRunConfig(argMap) {
+export function copyViteRunConfig(argMap: Record<any, any>) {
   // console.log(argMap);
   if (argMap.init) {
     const __filename = import.meta.url
@@ -24,7 +25,7 @@ export function copyViteRunConfig(argMap) {
     const res = glob.globSync(`${cwd()}/src/**/*.{ts,tsx}`)
     let suffix = res.length > 0 ? '.ts' : '.js'
     const configFileName = `${targetConfigName}${suffix}`
-    let templateName = 'docs'
+    let templateName: keyof typeof templateMapping = 'docs'
     if (argMap.p) templateName = 'p'
     const configPath = resolve(filePath, `../../${templateMapping[templateName]}`)
     let toPath = resolve(cwd(), `./${configFileName}`)

@@ -38,7 +38,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src', `index.ts`),
       name: moduleName,
-      formats: ['es', 'cjs'],
+      formats: ['es'],
       fileName: (format, filename) => `${moduleName}.${format}.js`,
     },
     rollupOptions: {

@@ -108,7 +108,7 @@ export default defineViteRunConfig({
              // vue()
             ]
           }
-       }，
+       }
        // baseConfig：{}  直接使用对象形式
     })
     ```
@@ -145,11 +145,13 @@ export default defineViteRunConfig({
              dev: ['watch']
           },
           'web-app': {
-             prod: [
+             build: [
                ['es','production'],  // 配置块组
-               'umd'   // 配置块
+               ['umd']
              ],
-             dev:['10000']
+             dev:[
+               ['10000']
+             ]
           },
         },
       })
@@ -246,7 +248,7 @@ interceptStdoutWriteLog((log)=>{
     })
     ```
 2. `配置名称`： 比如下方的`dev`就是配置名称，里面包含多个vite配置块，
-   dev数组里面每个数组成员(配置块 | 配置块组)最终都会生成一个独立的vite配置
+   dev数组里面每个数组成员(配置块组)最终都会生成一个独立的vite配置
    ```javascript
    export default defineViteRunConfig({
       targets: {

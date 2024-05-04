@@ -3,21 +3,19 @@ import {version as packVersion} from "../../../package.json"
 import colors from "picocolors";
 import {ConfigManager} from "@/bin/vite-run/ConfigManager";
 import {copyViteRunConfig} from "@/bin/vite-run/createTemplate";
-import * as console from "console";
 
 let configManager: ConfigManager
 
 async function execViteTarget(args: string[], optionValues: Record<string, any>) {
   const scriptType = args.shift()   // 运行target某个规则类型先拿出来，后面剩下的都会是包名
   // args 如果数组不等于0个，说明针对指定一个或多个包执行 scriptType定义的配置
- if (scriptType) await configManager.patch(scriptType, args, optionValues)
+  if (scriptType) await configManager.patch(scriptType, args, optionValues)
 }
 
 
 (async () => {
   const program = new Command();
   configManager = new ConfigManager()
-  await configManager.init()
 
   program
     .name('vite-run')
@@ -30,13 +28,18 @@ async function execViteTarget(args: string[], optionValues: Record<string, any>)
     .version(packVersion)
     /* @ts-ignore */
     .action(async (argMap: any, options: Record<any, any>) => {
+      await configManager.init()
       const args = options.args || []
-      const optionValues = options._optionValues
-      // console.log(options)
-      if (args.length < 1 && Object.keys(argMap).length === 0) return program.help()
-      if (Object.keys(argMap)) copyViteRunConfig(argMap)
+      if (args.length === 0 && Object.keys(argMap).length === 0) {
+        return program.help()
+      }
+      if (Object.keys(argMap)) {
+        copyViteRunConfig(argMap)
+      }
       //-----------------------------------------------------
-      if (args.length) await execViteTarget(args, optionValues)
+      if (args.length) {
+        await execViteTarget(args, argMap)
+      }
     })
 
   program.parse();

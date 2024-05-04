@@ -1,5 +1,5 @@
 import {resolve} from "node:path";
-import {defineViteRunConfig, viteRunLogPlugin} from "./src";
+import {defineViteRunConfig, viteRunLogPlugin, ViteRunHandleFunctionOptions} from "./src";
 import createCopyDts from "vite-plugin-copy-dts";
 import dts from "vite-plugin-dts";
 
@@ -91,7 +91,7 @@ export default defineViteRunConfig({
           entry: resolve(options.packagePath, 'src', 'index.ts'),
           formats: ['umd'],
           name: options.name,
-          fileName: (format) => `index.${format}.js`,
+          fileName: (format: string) => `index.${format}.js`,
         },
         rollupOptions: {
           external: [
@@ -161,7 +161,7 @@ export default defineViteRunConfig({
 })
 
 
-function getBaseConfig(options) {
+function getBaseConfig(options: ViteRunHandleFunctionOptions) {
   // console.log(this);
   // console.log('viterun:', options)
   const entryPath = options.packagePath.includes('examples/')
@@ -182,7 +182,7 @@ function getBaseConfig(options) {
       lib: {
         entry: entryPath,
         name: options.name,
-        fileName: (format) => `${options.name}.${format}.js`,
+        fileName: (format: string) => `${options.name}.${format}.js`,
       },
       rollupOptions: {
         external: [

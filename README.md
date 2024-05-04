@@ -118,7 +118,7 @@ desc `For shared vite configuration, all configuration blocks will be merged wit
              // vue()
             ]
           }
-       }，
+       }
        // baseConfig：{}  Directly using object form
     })
     ```
@@ -162,11 +162,13 @@ the configuration block
              dev: ['watch']
           },
           'web-app': {
-             prod: [
+             build: [
                ['es','production'],  // Configuration Block Group
-               'umd'   // Configuration Block
+               ['umd']
              ],
-             dev:['10000']
+             dev:[
+               ['10000']
+             ]
           },
         },
       })
@@ -267,15 +269,14 @@ interceptStdoutWriteLog((log)=>{
    ```
 2. `configuration name`: For example, `dev` below is the configuration name, which contains multiple vite configuration
    blocks,
-   Each array member (configuration block | configuration block group) in the dev array will ultimately generate an
+   Each array member (configuration block group) in the dev array will ultimately generate an
    independent vite configuration
    ```javascript
    export default defineViteRunConfig({
       targets: {
         'lib-app':{
            dev: [
-             'watch'，
-             'es'
+             ['watch',  'es'],
            ]
         },
       }

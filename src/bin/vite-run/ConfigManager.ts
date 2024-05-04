@@ -84,6 +84,7 @@ export class ConfigManager {
   public async init() {
     //@ts-ignore
     const fullConfig = <Record<any, any>>await readLocalViteRunConfig()
+    if (!fullConfig) return
     for (const k in fullConfig) {
       const val = fullConfig[k]
       // @ts-ignore
@@ -99,6 +100,7 @@ export class ConfigManager {
    * */
   private async getAllLocalPackage() {
     const localConfig = await readLocalViteRunConfig()
+    if (!localConfig) return []
     const packages = isFunction(localConfig.packages) ? localConfig.packages.call(localConfig) : localConfig.packages  // 获取 packages 配置，如果是函数则获取真实配置对象
     let allApp: string[] = []
     packages.forEach((packagePart: string) => {

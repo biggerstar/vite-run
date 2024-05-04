@@ -5,7 +5,6 @@ import {supportViteMethod} from "@/plugins/resetOutputLog/types";
 
 export async function patchToViteEngine(type: supportViteMethod, viteConfig: any) {
   // console.log(type)
-
   async function runPreview() {
     const previewServer = await preview(viteConfig)
     printSpaceLine()
@@ -22,7 +21,6 @@ export async function patchToViteEngine(type: supportViteMethod, viteConfig: any
   async function runBuild() {
     await build(viteConfig)
   }
-
   switch (type) {
     case 'preview': {
       await runPreview()

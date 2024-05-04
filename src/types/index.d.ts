@@ -37,7 +37,7 @@ export type BaseConfigReturnType =
   | DeepPartial<DeepPartialViteUserConfig>
 
 export type DeepPartialViteUserConfig = DeepPartial<NoPluginsFiledUserConfig>
-  & { plugins?: import('vite').Plugin[] }
+  & { plugins?: Array<Partial<import('vite').Plugin & Record<any, any>>> }
 
 /** targets下执行目标的类型，也就是命令行执行时 vite-run XXX 指向的对象,会提取当前用户已定义配置的名字，允许类型为字符串数组 */
 

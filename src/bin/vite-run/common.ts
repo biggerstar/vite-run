@@ -3,14 +3,14 @@ import {ViteRunOptions} from "@/types";
 import {loadConfig} from "unconfig";
 import colors from "picocolors";
 
-export const issueUrl = 'https://www.github.com/biggerstar/issue'
+export const issueUrl = 'https://www.github.com/biggerstar/vite-run/issue'
 export const consolePrintConfigHeader = '[viterun.config]'
 export let consolePrintHeader = '[viterun] '
 export const targetConfigName = 'viterun.config'
 export const targetTemplateConfigName = 'default-viterun.config.ts'
 export const targetTemplateDocsConfigName = 'docs-viterun.config.ts'
 
-export const configSuffixList = ['ts', 'tsx', 'mts', 'cts', 'js', 'mjs', 'cjs']
+export const configSuffixList = ['ts', 'tsx', 'mts', 'js', 'mjs']
 export const selfConfigFields = ['packages', 'baseConfig', 'targets']
 
 /** 检查数组中重复的值并返回重复值的列表 */
@@ -52,10 +52,23 @@ export function printIssueLog(log: string, isExit = false) {
 }
 
 let localConfig: Partial<ViteRunOptions>
+/*
+  在 vite4 以上 vite 已经弃用 cjs 加载，
+  而本库使用 unconfig 加载 viterun.config 文件， unconfig库最终会编译成cjs
+  这里拦截控制台输出将 vite 发出的 cjs 弃用警告忽略
+*/
+const realLog = console.log
+console.warn = (...msgs) => {
+  if (msgs.join('').includes('The CJS build of Vite\'s Node API is deprecated.')) {
+    return
+  }
+  realLog(...msgs);
+};
 
 /** 读取本地 vite-run.config 配置 */
-export async function readLocalViteRunConfig(): Promise<Partial<ViteRunOptions>> {
+export async function readLocalViteRunConfig(): Promise<Partial<ViteRunOptions> | false> {
   if (localConfig) return localConfig   // 如果已经读过了，直接返回不会重新读取
+
   const {config} = await loadConfig({
     sources: [
       {
@@ -66,7 +79,7 @@ export async function readLocalViteRunConfig(): Promise<Partial<ViteRunOptions>>
     merge: false,
   })
   if (!config) {
-    throw new Error(colors.red(`The ${targetConfigName} configuration file cannot be found`))
+    console.log(colors.red(`The ${targetConfigName} configuration file cannot be found, You can run 'vite run --init' to create a template`))
   }
   return localConfig = (config || {}) as Partial<ViteRunOptions<{}>>
 }
