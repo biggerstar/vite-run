@@ -76,6 +76,9 @@ options:
 **build**
 ![build](./images/build.png)
 
+**manual-selection-app**
+![manual-selection](./images/manual-selection.png)
+
 ## viterun.config [.js | .ts]
 
 `viterun.config`是在项目根目录下创建的配置文件，类似`vite.config`,

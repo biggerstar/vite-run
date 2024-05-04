@@ -17,54 +17,25 @@ export default defineViteRunConfig({
       //   dev: ['watch']
       // },
       'lib1': {
-        build: [
-          ['build_lib', 'umd', 'minify']
-        ],
-        types: [
-          ['types']
-        ],
-        '@dev': [
-          ['watch']
-        ],
+        build: [['build_lib', 'umd', 'minify']],
+        types: [['types']],
+        '@dev': [['watch']],
       },
       'lib2': {
-        '@build': [
-          ['es'],
-          ['umd', 'minify']
-        ],
-        types: [
-          ['types']
-        ],
-        dev: [
-          ['watch']
-        ]
+        '@build': [['es'], ['umd', 'minify']],
+        types: [['types']],
+        dev: [['watch']]
       },
       'web1': {
-        build: [
-          ['es', 'production'],
-          ['umd', 'minify']
-        ],
-        dev: [
-          ['s10000']
-        ],
-        preview: [
-          ['p20000']
-        ]
+        build: [['es'], ['umd', 'minify']],
+        dev: [['s10000']],
+        preview: [['p20000']]
       },
       'web2': {
-        build: [
-          ['es'],
-          ['umd', 'minify']
-        ],
-        dev: [
-          ['s11000']
-        ]
+        build: [['es'], ['umd', 'minify']],
+        dev: [['s11000']]
       },
     }
-  },
-  mode: {
-    production: 'production',
-    development: 'development',
   },
   build: {
     es() {

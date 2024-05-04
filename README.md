@@ -83,6 +83,9 @@ for more information [viterun.config.ts](./src/template/docs-viterun.config.ts)
 **build**
 ![build](./images/build.png)
 
+**manual-selection-app**
+![manual-selection](./images/manual-selection.png)
+
 ## viterun.config [.js | .ts]
 
 `Viterun.config`  is a configuration file created in the project root directory,
