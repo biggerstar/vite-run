@@ -36,28 +36,15 @@ This tool is developed in `pnpm` multi package mode
 
 ## Terminal commands
 
-Quickly create a `viterun.config` configuration template,
-`viterun` will automatically recognize that the current project is `js` or `ts`
-and create a configuration file with the corresponding suffix
+Main command `vite-run`
 
--   ```shell
-    vite-run --init [? -f -p]
-    ```
-
-options:
-
-- `--init` Create a template configuration file in the root directory
-- `-f` When you create a configuration template, you will forcibly overwrite the existing local configuration, if any
-- `-p` Create a viterun.config file without using comments
-
----
-Run the configuration name defined in the `targets` configuration,
-If appNames is not specified, all configurations containing the configuration name will run,
-If you specify an app name, only the configuration of the target app is run, and multiple appNames are supported
-
--   ```shell
-    vite-run [configuration name]  [?appName1] [?appName2] ...
-    ```
+| Subcommands | parameter                                               | explain                                                                 |
+|-------------|---------------------------------------------------------|-------------------------------------------------------------------------|
+|             | `<Configuration Name>  <One or more package names ...>` | Run one or more packages, example: vite-run build appName1 appName2 ... |
+|             | `-y`                                                    | Run directly without jumping out of the interactive page                |
+| `init`      |                                                         | Automatically generate viterun.config file                              |
+| `init`      | `--cover`                                               | Force overwrite of local viterun.config file                            |
+| `init`      | `--docs`                                                | Generate a viterun.config file with document explanation                |
 
 example：
 
@@ -92,7 +79,8 @@ for more information [viterun.config.ts](./src/template/docs-viterun.config.ts)
 similar to `vite.config` , The suffix can be `js` or `ts`
 
 ```javascript
-import { defineViteRunConfig } from "vite-run";
+import {defineViteRunConfig} from "vite-run";
+
 export default defineViteRunConfig({
   // baseConfig:{},
   // packages:[],
@@ -137,13 +125,13 @@ desc  `The list of sub packages to be managed supports global and file paths, an
 - struct ``` Array<string>```
 
     ```javascript
-    export default defineViteRunConfig{{
+    export default defineViteRunConfig({
        packages: [
          'packages/*',
          'examples/vue3',
          './'     // Support the operation of the main package
        ]
-    }}
+    })
     ```
 
 **targets**
@@ -190,7 +178,7 @@ The original vite configuration serves as the value of the key name
 export default defineViteRunConfig({
   build: {
     lib: {
-       formats: ['es']
+      formats: ['es']
     },
     watch: {},
   },
@@ -202,12 +190,12 @@ export default defineViteRunConfig({
 // viterun configuration structure
 export default defineViteRunConfig({
   build: {
-    es:{     // Supports the use of object forms
-      lib:{
-         formats: ['es']
-       }
-    },
-    es:(options)=> {  // Supports functional returns, with options containing subpackage information
+    // es:{     // Supports the use of object forms
+    //   lib:{
+    //      formats: ['es']
+    //    }
+    // },
+    es: (options) => {  // Supports functional returns, with options containing subpackage information
       return {
         lib: {
           formats: ['es']
@@ -215,7 +203,7 @@ export default defineViteRunConfig({
       }
     },
     watch: {
-      watch:{}
+      watch: {}
     },
   },
   server: {
@@ -236,7 +224,7 @@ You can directly import and use it. Please click on the editor link to view the 
 the d. ts file yourself
 
 ```javascript
-import { viteRunLogPlugin } from 'vite-run'
+import {viteRunLogPlugin} from 'vite-run'
 ```
 
 ## interceptStdoutWriteLog
@@ -245,12 +233,13 @@ If you have a need to intercept other log outputs, you can use the `interceptStd
 This plugin can control and `intercept all` character stream information output to the console
 
 ```javascript
-import { interceptStdoutWriteLog } from 'vite-run'
-interceptStdoutWriteLog((log)=>{
-    console.warn(log)  // If console. log cannot be used, please use console. warn
-    //Returning true indicates that the log is output, while returning false indicates that the log is not output,
-    //If you want to modify the log, simply return false and manually output it from console. warn
-    return true
+import {interceptStdoutWriteLog} from 'vite-run'
+
+interceptStdoutWriteLog((log) => {
+  console.warn(log)  // If console. log cannot be used, please use console. warn
+  //Returning true indicates that the log is output, while returning false indicates that the log is not output,
+  //If you want to modify the log, simply return false and manually output it from console. warn
+  return true
 })
 ```
 

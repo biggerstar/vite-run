@@ -35,7 +35,7 @@ async function execViteTarget(args: string[], optionValues: Record<string, any>)
     })
 
   program.command('init')
-    .description('Initialize Configuration Template')
+    .description('\u25B6  ' + 'Initialize Configuration Template')
     .option('--cover', '[--init] Force overwrite of local viterun.config file during initialization')
     .option('--docs', '[--init] Generate the vite-run configuration without comments')
     .option('--shadow', '')  // 生成影子文件，用于调试产出文件不会覆盖原有的viterun.config
