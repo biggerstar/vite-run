@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import {Command} from 'commander'
 import {version as packVersion} from "../../../package.json"
 import colors from "picocolors";
