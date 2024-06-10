@@ -17,12 +17,12 @@ export default defineViteRunConfig({
       //   dev: ['watch']
       // },
       'lib1': {
-        build: [['build_lib', 'umd', 'minify']],
+        build: [['build_lib', 'es']],
         types: [['types']],
         '@dev': [['watch']],
       },
       'lib2': {
-        '@build': [['es'], ['umd', 'minify']],
+        '@build': [['es']],
         types: [['types']],
         dev: [['watch']]
       },
@@ -60,7 +60,7 @@ export default defineViteRunConfig({
       return {
         lib: {
           entry: resolve(options.packagePath, 'src', 'index.ts'),
-          formats: ['umd'],
+          formats: ['cjs'],
           name: options.name,
           fileName: (format: string) => `index.${format}.js`,
         },

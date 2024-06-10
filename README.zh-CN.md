@@ -52,6 +52,7 @@ vite 多配置执行支持, 配置共享，像搭积木一样自由组合配置�
 - 执行全部包含dev的配置，不指定app名称则默认找到所有app中包含dev的配置并执行
     ```shell
      vite-run dev
+     vite-run build
     ```
 - 为 app 和 app2 执行dev配置, app名称没有限制个数
     ```shell

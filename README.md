@@ -52,6 +52,7 @@ example：
   containing dev in the app will be found and executed
     ```shell
      vite-run dev
+     vite-run build
     ```
 - Perform dev configuration for app and app2, with no limit on the number of app names
     ```shell
